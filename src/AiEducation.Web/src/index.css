@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ai-primary: #5e7cfb;
+  --ai-primary-600: #4367f7;
+  --ai-primary-soft: #eef3ff;
+  --ai-secondary: #6fd3c3;
+  --ai-secondary-600: #22b8aa;
+  --ai-secondary-soft: #eafbfb;
+  --ai-accent: #f8a23d;
+  --ai-accent-600: #f28a17;
+  --ai-accent-soft: #fff3e2;
+  --ai-bg: #f7f9fd;
+  --ai-surface: #ffffff;
+  --ai-border: #e6eaf2;
+  --ai-text: #111827;
+  --ai-muted: #6b7280;
+  --ai-radius-lg: 24px;
+  --ai-radius-md: 16px;
+  --ai-shadow-soft: 0 16px 40px rgba(17, 24, 39, 0.08);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: var(--ai-text);
+  background: var(--ai-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--ai-bg);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

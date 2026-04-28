@@ -1,0 +1,5299 @@
+{
+  "metadata": {
+    "version": "2.0-duolingo-inspired",
+    "language": "tr",
+    "generatedAt": "2026-04-28T07:44:03.070886Z",
+    "platform": "AI Uzmanlık Eğitim Platformu",
+    "designReference": "Görseldeki açık renkli, kart tabanlı, mavi/turkuaz/turuncu aksanlı dashboard dili",
+    "importantNote": "Bu içerik Duolingo'nun motivasyon ilkelerinden esinlenir; marka, karakter ve içerik birebir kopyalanmaz. AI eğitiminde mikro alışkanlık + portföy/proje dengesi korunur."
+  },
+  "productStrategy": {
+    "positioning": "Yapay zeka öğrenimini günlük alışkanlığa dönüştüren, mikro ders + proje + AI mentor tabanlı eğitim platformu.",
+    "northStarMetric": "Haftalık anlamlı öğrenme yapan aktif kullanıcı sayısı: WAL = haftada en az 3 mikro ders + 1 quiz/pratik veya 1 proje adımı tamamlayan kullanıcı.",
+    "coreLoop": [
+      "Hatırlatıcı veya günlük hedef",
+      "3-5 dakikalık mikro ders",
+      "Anında geri bildirim",
+      "XP/streak/quest ödülü",
+      "Bir sonraki küçük adım",
+      "Haftalık proje veya portföy kanıtı"
+    ],
+    "learningModes": [
+      {
+        "mode": "Learn",
+        "duration": "3-5 dk",
+        "purpose": "Kavramı direnç yaratmadan öğretmek"
+      },
+      {
+        "mode": "Practice",
+        "duration": "5-12 dk",
+        "purpose": "Kodu, promptu veya değerlendirme kararını uygulatmak"
+      },
+      {
+        "mode": "Build",
+        "duration": "30-180 dk",
+        "purpose": "Portföy ve gerçek beceri kanıtı üretmek"
+      }
+    ]
+  },
+  "gamificationConfig": {
+    "xpRules": [
+      {
+        "event": "micro_lesson_completed",
+        "xp": 10,
+        "dailyCap": 120,
+        "qualityGate": "exercise_required"
+      },
+      {
+        "event": "practice_completed",
+        "xp": 15,
+        "dailyCap": 150,
+        "qualityGate": "answer_or_code_required"
+      },
+      {
+        "event": "checkpoint_passed",
+        "xp": 25,
+        "dailyCap": 100,
+        "qualityGate": "score_70_percent"
+      },
+      {
+        "event": "project_step_completed",
+        "xp": 40,
+        "dailyCap": 160,
+        "qualityGate": "artifact_required"
+      },
+      {
+        "event": "project_submitted",
+        "xp": 120,
+        "dailyCap": 240,
+        "qualityGate": "rubric_review_required"
+      },
+      {
+        "event": "resource_summary_submitted",
+        "xp": 20,
+        "dailyCap": 60,
+        "qualityGate": "ai_or_admin_review"
+      },
+      {
+        "event": "peer_helpful_feedback",
+        "xp": 10,
+        "dailyCap": 50,
+        "qualityGate": "receiver_marked_helpful"
+      }
+    ],
+    "streak": {
+      "dailyGoalXpOptions": [
+        10,
+        20,
+        30,
+        40,
+        50
+      ],
+      "defaultDailyGoalXp": 20,
+      "streakExtendsWhen": "daily_goal_xp_reached OR one_micro_lesson_completed",
+      "freeze": {
+        "enabled": true,
+        "freeMonthly": 2,
+        "premiumMonthly": 5,
+        "purchaseWithGems": true
+      },
+      "recovery": "Kaçırılan gün sonrası 24 saat içinde iki mikro dersle streak kurtarma hakkı; ayda 1 kez ücretsiz."
+    },
+    "leagues": {
+      "seasonLengthDays": 7,
+      "resetDay": "Monday",
+      "tiers": [
+        "Bronze",
+        "Silver",
+        "Gold",
+        "Sapphire",
+        "Ruby",
+        "Emerald",
+        "Diamond"
+      ],
+      "groupSize": 30,
+      "promotionRule": "Top 10 bir üst lige çıkar.",
+      "demotionRule": "Son 5 bir alt lige düşer; başlangıç kullanıcılarında ilk 2 hafta demotion kapalıdır.",
+      "fairness": "Kullanıcılar son 14 günlük aktivite ve seviye bandına göre gruplandırılır. Sadece ham XP değil, kalite kapısından geçmiş XP sayılır."
+    },
+    "badges": [
+      {
+        "slug": "first-byte",
+        "title": "İlk AI Byte",
+        "condition": "İlk mikro dersi tamamlama"
+      },
+      {
+        "slug": "seven-day-streak",
+        "title": "7 Günlük Seri",
+        "condition": "7 gün üst üste günlük hedef"
+      },
+      {
+        "slug": "python-sapling",
+        "title": "Python Filizi",
+        "condition": "Python Temelleri modülünü bitirme"
+      },
+      {
+        "slug": "first-model",
+        "title": "İlk Model",
+        "condition": "İlk scikit-learn modelini çalıştırma"
+      },
+      {
+        "slug": "rag-builder",
+        "title": "RAG Kurucusu",
+        "condition": "Basit RAG prototipi gönderme"
+      },
+      {
+        "slug": "security-minded",
+        "title": "Güvenlik Bilinci",
+        "condition": "Prompt injection görevini geçme"
+      },
+      {
+        "slug": "portfolio-maker",
+        "title": "Portföy Üreticisi",
+        "condition": "3 kanıt ekleme: GitHub, README, demo/notebook"
+      }
+    ],
+    "dailyQuests": [
+      {
+        "slug": "daily-micro-lesson",
+        "title": "Bir AI Byte tamamla",
+        "rewardXp": 10,
+        "rewardGems": 5
+      },
+      {
+        "slug": "daily-practice",
+        "title": "Bir pratik sorusu çöz",
+        "rewardXp": 15,
+        "rewardGems": 8
+      },
+      {
+        "slug": "daily-review",
+        "title": "Dünkü hatanı tekrar et",
+        "rewardXp": 10,
+        "rewardGems": 5
+      }
+    ],
+    "weeklyQuests": [
+      {
+        "slug": "weekly-project-step",
+        "title": "Bir proje adımı teslim et",
+        "rewardXp": 60,
+        "rewardGems": 25
+      },
+      {
+        "slug": "weekly-source-summary",
+        "title": "Bir resmi kaynağı özetle",
+        "rewardXp": 40,
+        "rewardGems": 20
+      },
+      {
+        "slug": "weekly-checkpoint",
+        "title": "Bir kontrol testini geç",
+        "rewardXp": 50,
+        "rewardGems": 20
+      }
+    ],
+    "mascotAndCharacters": {
+      "mascotNameOptions": [
+        "Aiva",
+        "Rota",
+        "Byte",
+        "Nora"
+      ],
+      "recommendedName": "Aiva",
+      "role": "Dost canlısı ama net AI mentor; günlük hedefi hatırlatır, minik başarılara tepki verir, zor konularda kullanıcıyı sakinleştirir.",
+      "supportingCharacters": [
+        {
+          "name": "Debug Usta",
+          "persona": "Kod hatalarını sabırlı ama direkt anlatır."
+        },
+        {
+          "name": "Veri Dedektifi",
+          "persona": "Veri analizi ve hata bulma görevlerinde rehber olur."
+        },
+        {
+          "name": "Güvenlik Nöbetçisi",
+          "persona": "LLM güvenliği ve risk uyarılarında görünür."
+        },
+        {
+          "name": "Ürün Mentoru",
+          "persona": "Proje ve portföy kararlarında kullanıcıya odak kazandırır."
+        }
+      ],
+      "toneRules": [
+        "Eğlenceli ama küçümsemeyen dil",
+        "Suçluluk yerine hafif mizah",
+        "Kullanıcının emek verdiğini görme",
+        "Manipülatif korkutma yerine net hatırlatma"
+      ]
+    }
+  },
+  "notificationTemplates": [
+    {
+      "key": "streak_morning",
+      "channel": "push_email_web",
+      "tone": "friendly",
+      "title": "Bugünkü AI Byte hazır",
+      "body": "3 dakikalık küçük bir adım seri hedefini korumaya yeter."
+    },
+    {
+      "key": "streak_evening",
+      "channel": "push_email_web",
+      "tone": "playful",
+      "title": "Serin bekliyor",
+      "body": "Aiva panikte değil, sadece bugün 1 mini dersin kaldığını söylüyor."
+    },
+    {
+      "key": "project_nudge",
+      "channel": "email_web",
+      "tone": "mentor",
+      "title": "Portföy kanıtına 1 adım",
+      "body": "Bu haftaki proje adımını gönderirsen yol haritandaki Build halkası tamamlanacak."
+    },
+    {
+      "key": "league_final_hours",
+      "channel": "push_web",
+      "tone": "competitive",
+      "title": "Lig sezonu bitiyor",
+      "body": "Kalite kapısından geçen birkaç XP seni bir üst sıraya taşıyabilir."
+    },
+    {
+      "key": "comeback_after_3_days",
+      "channel": "email",
+      "tone": "supportive",
+      "title": "Kaldığın yer duruyor",
+      "body": "Sıfırdan başlamıyorsun. Bugün yalnızca bir tekrar dersi yeterli."
+    }
+  ],
+  "experimentation": {
+    "minimumDataRule": "Her A/B test başlamadan önce ana metrik, guardrail metrik ve durdurma kuralı yazılır. MVP'de küçük trafik nedeniyle az ama net test yapılır.",
+    "events": [
+      "UserSignedUp",
+      "PathSelected",
+      "LessonStarted",
+      "LessonCompleted",
+      "ExerciseSubmitted",
+      "XPGranted",
+      "StreakExtended",
+      "StreakBroken",
+      "QuestCompleted",
+      "QuizSubmitted",
+      "ProjectStepSubmitted",
+      "ProjectSubmitted",
+      "AIMessageSent",
+      "PaywallViewed",
+      "SubscriptionStarted",
+      "NotificationSent",
+      "NotificationOpened",
+      "ExperimentAssigned"
+    ],
+    "candidateABTests": [
+      {
+        "key": "onboarding_goal_options",
+        "hypothesis": "Günlük hedefi kullanıcıya seçtirmek D7 retention artırır.",
+        "variants": [
+          "default_20xp",
+          "user_select_goal",
+          "recommended_by_level"
+        ],
+        "primaryMetric": "D7 retention",
+        "guardrail": "lesson completion rate"
+      },
+      {
+        "key": "lesson_cta_copy",
+        "hypothesis": "'3 dakikalık AI Byte' CTA'sı başlangıç ders tamamlama oranını artırır.",
+        "variants": [
+          "Yola Başla",
+          "3 Dakikalık AI Byte",
+          "Bugünkü Mini Dersi Bitir"
+        ],
+        "primaryMetric": "first_lesson_completed",
+        "guardrail": "bounce_rate"
+      },
+      {
+        "key": "streak_loss_copy",
+        "hypothesis": "Suçluluk yerine destekleyici dil uzun vadeli geri dönüşü artırır.",
+        "variants": [
+          "neutral",
+          "playful",
+          "supportive"
+        ],
+        "primaryMetric": "next_day_return",
+        "guardrail": "unsubscribe_notification"
+      },
+      {
+        "key": "xp_reward_scale",
+        "hypothesis": "Başlangıçta daha sık küçük ödül motivasyonu artırır.",
+        "variants": [
+          "standard",
+          "front_loaded",
+          "quality_weighted"
+        ],
+        "primaryMetric": "lessons_per_active_user",
+        "guardrail": "quiz_score"
+      },
+      {
+        "key": "project_unlock_timing",
+        "hypothesis": "Proje çok geç açılırsa kullanıcı gerçek değer hissetmez.",
+        "variants": [
+          "after_unit_3",
+          "after_unit_5",
+          "always_visible_locked"
+        ],
+        "primaryMetric": "project_started",
+        "guardrail": "beginner_dropoff"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "slug": "python-official-tutorial",
+      "title": "Python Official Tutorial",
+      "url": "https://docs.python.org/3/tutorial/",
+      "sourceName": "Python",
+      "type": "official_docs",
+      "language": "en",
+      "level": "beginner",
+      "topic": "python",
+      "isOfficial": true
+    },
+    {
+      "slug": "python-venv",
+      "title": "Python venv",
+      "url": "https://docs.python.org/3/library/venv.html",
+      "sourceName": "Python",
+      "type": "official_docs",
+      "language": "en",
+      "level": "beginner",
+      "topic": "python-environment",
+      "isOfficial": true
+    },
+    {
+      "slug": "pandas-getting-started",
+      "title": "pandas Getting Started",
+      "url": "https://pandas.pydata.org/docs/getting_started/",
+      "sourceName": "pandas",
+      "type": "official_docs",
+      "language": "en",
+      "level": "beginner",
+      "topic": "data-analysis",
+      "isOfficial": true
+    },
+    {
+      "slug": "numpy-learn",
+      "title": "NumPy Learn",
+      "url": "https://numpy.org/learn/",
+      "sourceName": "NumPy",
+      "type": "official_docs",
+      "language": "en",
+      "level": "beginner",
+      "topic": "numerical-computing",
+      "isOfficial": true
+    },
+    {
+      "slug": "google-ml-crash-course",
+      "title": "Google Machine Learning Crash Course",
+      "url": "https://developers.google.com/machine-learning/crash-course",
+      "sourceName": "Google Developers",
+      "type": "course",
+      "language": "en",
+      "level": "beginner",
+      "topic": "machine-learning",
+      "isOfficial": true
+    },
+    {
+      "slug": "scikit-learn-user-guide",
+      "title": "scikit-learn User Guide",
+      "url": "https://scikit-learn.org/stable/user_guide.html",
+      "sourceName": "scikit-learn",
+      "type": "official_docs",
+      "language": "en",
+      "level": "beginner",
+      "topic": "machine-learning",
+      "isOfficial": true
+    },
+    {
+      "slug": "pytorch-tutorials",
+      "title": "PyTorch Tutorials",
+      "url": "https://docs.pytorch.org/tutorials/",
+      "sourceName": "PyTorch",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "deep-learning",
+      "isOfficial": true
+    },
+    {
+      "slug": "huggingface-course",
+      "title": "Hugging Face Course",
+      "url": "https://huggingface.co/learn/nlp-course/",
+      "sourceName": "Hugging Face",
+      "type": "course",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "nlp-llm",
+      "isOfficial": true
+    },
+    {
+      "slug": "huggingface-transformers-docs",
+      "title": "Transformers Documentation",
+      "url": "https://huggingface.co/docs/transformers/index",
+      "sourceName": "Hugging Face",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "transformers",
+      "isOfficial": true
+    },
+    {
+      "slug": "openai-api-docs",
+      "title": "OpenAI API Documentation",
+      "url": "https://platform.openai.com/docs",
+      "sourceName": "OpenAI",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "llm-api",
+      "isOfficial": true
+    },
+    {
+      "slug": "mlflow-docs",
+      "title": "MLflow Documentation",
+      "url": "https://mlflow.org/docs/latest/index.html",
+      "sourceName": "MLflow",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "mlops",
+      "isOfficial": true
+    },
+    {
+      "slug": "docker-get-started",
+      "title": "Docker Get Started",
+      "url": "https://docs.docker.com/get-started/",
+      "sourceName": "Docker",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "deployment",
+      "isOfficial": true
+    },
+    {
+      "slug": "fastapi-docs",
+      "title": "FastAPI Documentation",
+      "url": "https://fastapi.tiangolo.com/",
+      "sourceName": "FastAPI",
+      "type": "official_docs",
+      "language": "en",
+      "level": "intermediate",
+      "topic": "api",
+      "isOfficial": true
+    },
+    {
+      "slug": "langchain-docs",
+      "title": "LangChain Documentation",
+      "url": "https://python.langchain.com/docs/",
+      "sourceName": "LangChain",
+      "type": "official_docs",
+      "language": "en",
+      "level": "advanced",
+      "topic": "rag-agents",
+      "isOfficial": true
+    },
+    {
+      "slug": "llamaindex-docs",
+      "title": "LlamaIndex Documentation",
+      "url": "https://docs.llamaindex.ai/",
+      "sourceName": "LlamaIndex",
+      "type": "official_docs",
+      "language": "en",
+      "level": "advanced",
+      "topic": "rag-agents",
+      "isOfficial": true
+    },
+    {
+      "slug": "owasp-llm-top-10",
+      "title": "OWASP Top 10 for LLM Applications",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "sourceName": "OWASP",
+      "type": "security_reference",
+      "language": "en",
+      "level": "advanced",
+      "topic": "ai-security",
+      "isOfficial": true
+    },
+    {
+      "slug": "nist-ai-rmf",
+      "title": "NIST AI Risk Management Framework",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "sourceName": "NIST",
+      "type": "governance_reference",
+      "language": "en",
+      "level": "advanced",
+      "topic": "ai-governance",
+      "isOfficial": true
+    },
+    {
+      "slug": "microsoft-aspnet-core-docs",
+      "title": "ASP.NET Core Documentation",
+      "url": "https://learn.microsoft.com/aspnet/core/",
+      "sourceName": "Microsoft Learn",
+      "type": "official_docs",
+      "language": "en",
+      "level": "engineering",
+      "topic": "backend",
+      "isOfficial": true
+    },
+    {
+      "slug": "react-docs",
+      "title": "React Documentation",
+      "url": "https://react.dev/",
+      "sourceName": "React",
+      "type": "official_docs",
+      "language": "en",
+      "level": "engineering",
+      "topic": "frontend",
+      "isOfficial": true
+    },
+    {
+      "slug": "react-native-docs",
+      "title": "React Native Documentation",
+      "url": "https://reactnative.dev/docs/getting-started",
+      "sourceName": "React Native",
+      "type": "official_docs",
+      "language": "en",
+      "level": "engineering",
+      "topic": "mobile",
+      "isOfficial": true
+    }
+  ],
+  "learningPaths": [
+    {
+      "title": "Başlangıç AI Uzmanı",
+      "order": 1,
+      "duration": "8-12 hafta",
+      "accentColor": "primary",
+      "target": "Python, veri analizi, klasik ML ve LLM okuryazarlığı temeli kurar.",
+      "slug": "beginner",
+      "recommendedDailyGoalXp": 20,
+      "units": [
+        {
+          "slug": "ai-okuryazarligi",
+          "title": "AI Okuryazarlığı",
+          "order": 1,
+          "summary": "AI Okuryazarlığı modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "always_open",
+          "lessons": [
+            {
+              "slug": "beginner-ai-okuryazarligi-01",
+              "title": "Yapay zeka nedir, ne değildir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Yapay zeka nedir, ne değildir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Yapay zeka nedir, ne değildir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-ai-okuryazarligi-02",
+              "title": "Kural tabanlı sistem, ML ve LLM farkı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Kural tabanlı sistem, ML ve LLM farkı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Kural tabanlı sistem, ML ve LLM farkı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-ai-okuryazarligi-03",
+              "title": "AI projesinde veri-model-çıktı zinciri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'AI projesinde veri-model-çıktı zinciri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "AI projesinde veri-model-çıktı zinciri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-ai-okuryazarligi-04",
+              "title": "Halüsinasyon ve güvenilirlik",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Halüsinasyon ve güvenilirlik' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Halüsinasyon ve güvenilirlik konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-ai-okuryazarligi-05",
+              "title": "AI öğrenme planını seçme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'AI öğrenme planını seçme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "AI öğrenme planını seçme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-ai-okuryazarligi-checkpoint",
+              "title": "AI Okuryazarlığı kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "python-temelleri",
+          "title": "Python Temelleri",
+          "order": 2,
+          "summary": "Python Temelleri modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-python-temelleri-01",
+              "title": "Python ortamını kurma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Python ortamını kurma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Python ortamını kurma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            },
+            {
+              "slug": "beginner-python-temelleri-02",
+              "title": "Değişkenler ve veri tipleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Değişkenler ve veri tipleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Değişkenler ve veri tipleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            },
+            {
+              "slug": "beginner-python-temelleri-03",
+              "title": "Koşullar ve döngüler",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Koşullar ve döngüler' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Koşullar ve döngüler konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            },
+            {
+              "slug": "beginner-python-temelleri-04",
+              "title": "Fonksiyon yazma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Fonksiyon yazma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Fonksiyon yazma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            },
+            {
+              "slug": "beginner-python-temelleri-05",
+              "title": "Dosya okuma ve hata yakalama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Dosya okuma ve hata yakalama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Dosya okuma ve hata yakalama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            },
+            {
+              "slug": "beginner-python-temelleri-checkpoint",
+              "title": "Python Temelleri kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "python-official-tutorial",
+                "python-venv"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "veri-analizi",
+          "title": "Veri Analizi",
+          "order": 3,
+          "summary": "Veri Analizi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-veri-analizi-01",
+              "title": "Tablo verisini okuma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Tablo verisini okuma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Tablo verisini okuma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            },
+            {
+              "slug": "beginner-veri-analizi-02",
+              "title": "Satır ve sütun seçme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Satır ve sütun seçme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Satır ve sütun seçme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            },
+            {
+              "slug": "beginner-veri-analizi-03",
+              "title": "Eksik veriyi anlama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Eksik veriyi anlama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Eksik veriyi anlama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            },
+            {
+              "slug": "beginner-veri-analizi-04",
+              "title": "Basit grafik okuma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Basit grafik okuma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Basit grafik okuma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            },
+            {
+              "slug": "beginner-veri-analizi-05",
+              "title": "Veri analizi mini raporu",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Veri analizi mini raporu' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Veri analizi mini raporu konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            },
+            {
+              "slug": "beginner-veri-analizi-checkpoint",
+              "title": "Veri Analizi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "pandas-getting-started",
+                "numpy-learn"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "matematik-sezgi",
+          "title": "Matematik Sezgisi",
+          "order": 4,
+          "summary": "Matematik Sezgisi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-matematik-sezgi-01",
+              "title": "Vektör fikri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Vektör fikri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Vektör fikri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-matematik-sezgi-02",
+              "title": "Ortalama, varyans ve dağılım",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Ortalama, varyans ve dağılım' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Ortalama, varyans ve dağılım konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-matematik-sezgi-03",
+              "title": "Olasılık sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Olasılık sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Olasılık sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-matematik-sezgi-04",
+              "title": "Kayıp fonksiyonu sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Kayıp fonksiyonu sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Kayıp fonksiyonu sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-matematik-sezgi-05",
+              "title": "Gradyan fikri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Gradyan fikri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Gradyan fikri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-matematik-sezgi-checkpoint",
+              "title": "Matematik Sezgisi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "google-ml-crash-course"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "klasik-ml",
+          "title": "Klasik Makine Öğrenmesi",
+          "order": 5,
+          "summary": "Klasik Makine Öğrenmesi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-klasik-ml-01",
+              "title": "Regresyon problemi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Regresyon problemi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Regresyon problemi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-klasik-ml-02",
+              "title": "Sınıflandırma problemi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Sınıflandırma problemi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Sınıflandırma problemi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-klasik-ml-03",
+              "title": "Train-test ayrımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Train-test ayrımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Train-test ayrımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-klasik-ml-04",
+              "title": "Doğruluk, precision, recall",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Doğruluk, precision, recall' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Doğruluk, precision, recall konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-klasik-ml-05",
+              "title": "İlk scikit-learn modeli",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'İlk scikit-learn modeli' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "İlk scikit-learn modeli konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            },
+            {
+              "slug": "beginner-klasik-ml-checkpoint",
+              "title": "Klasik Makine Öğrenmesi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "google-ml-crash-course"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "llm-temelleri",
+          "title": "LLM Temelleri",
+          "order": 6,
+          "summary": "LLM Temelleri modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-llm-temelleri-01",
+              "title": "Token nedir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Token nedir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Token nedir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "beginner-llm-temelleri-02",
+              "title": "Prompt yazma prensipleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Prompt yazma prensipleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Prompt yazma prensipleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "beginner-llm-temelleri-03",
+              "title": "Few-shot örnekleme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Few-shot örnekleme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Few-shot örnekleme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "beginner-llm-temelleri-04",
+              "title": "Çıktı değerlendirme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Çıktı değerlendirme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Çıktı değerlendirme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "beginner-llm-temelleri-05",
+              "title": "Güvenli LLM kullanımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Güvenli LLM kullanımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Güvenli LLM kullanımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "beginner-llm-temelleri-checkpoint",
+              "title": "LLM Temelleri kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "openai-api-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "baslangic-proje",
+          "title": "Başlangıç Projesi",
+          "order": 7,
+          "summary": "Başlangıç Projesi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "beginner-baslangic-proje-01",
+              "title": "Problem seçme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Problem seçme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Problem seçme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            },
+            {
+              "slug": "beginner-baslangic-proje-02",
+              "title": "Veriyi hazırlama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Veriyi hazırlama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Veriyi hazırlama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            },
+            {
+              "slug": "beginner-baslangic-proje-03",
+              "title": "Basit model kurma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Basit model kurma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Basit model kurma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            },
+            {
+              "slug": "beginner-baslangic-proje-04",
+              "title": "Sonucu açıklama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'Sonucu açıklama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Sonucu açıklama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            },
+            {
+              "slug": "beginner-baslangic-proje-05",
+              "title": "README ve portföy kanıtı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "learningObjective": "Kullanıcı 'README ve portföy kanıtı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "README ve portföy kanıtı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            },
+            {
+              "slug": "beginner-baslangic-proje-checkpoint",
+              "title": "Başlangıç Projesi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "easy",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "scikit-learn-user-guide",
+                "pandas-getting-started"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Orta Seviye AI Uzmanı",
+      "order": 2,
+      "duration": "3-9 ay",
+      "accentColor": "secondary",
+      "target": "Derin öğrenme, RAG, LLM uygulaması, deployment ve MLOps pratiği kazanır.",
+      "slug": "intermediate",
+      "recommendedDailyGoalXp": 30,
+      "units": [
+        {
+          "slug": "derin-ogrenme",
+          "title": "Derin Öğrenme",
+          "order": 1,
+          "summary": "Derin Öğrenme modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "always_open",
+          "lessons": [
+            {
+              "slug": "intermediate-derin-ogrenme-01",
+              "title": "Nöron ve katman sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Nöron ve katman sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Nöron ve katman sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "intermediate-derin-ogrenme-02",
+              "title": "Tensor kavramı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Tensor kavramı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Tensor kavramı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "intermediate-derin-ogrenme-03",
+              "title": "İleri yayılım",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'İleri yayılım' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "İleri yayılım konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "intermediate-derin-ogrenme-04",
+              "title": "Geri yayılım sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Geri yayılım sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Geri yayılım sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "intermediate-derin-ogrenme-05",
+              "title": "PyTorch ile ilk model",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'PyTorch ile ilk model' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "PyTorch ile ilk model konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "intermediate-derin-ogrenme-checkpoint",
+              "title": "Derin Öğrenme kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "model-egitimi",
+          "title": "Model Eğitimi ve Değerlendirme",
+          "order": 2,
+          "summary": "Model Eğitimi ve Değerlendirme modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-model-egitimi-01",
+              "title": "Overfitting nedir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Overfitting nedir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Overfitting nedir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-model-egitimi-02",
+              "title": "Regularization",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Regularization' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Regularization konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-model-egitimi-03",
+              "title": "Hiperparametre denemesi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Hiperparametre denemesi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Hiperparametre denemesi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-model-egitimi-04",
+              "title": "Confusion matrix",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Confusion matrix' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Confusion matrix konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-model-egitimi-05",
+              "title": "Model kartı yazma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Model kartı yazma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Model kartı yazma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-model-egitimi-checkpoint",
+              "title": "Model Eğitimi ve Değerlendirme kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "pytorch-tutorials",
+                "mlflow-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "embedding-rag",
+          "title": "Embedding ve RAG",
+          "order": 3,
+          "summary": "Embedding ve RAG modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-embedding-rag-01",
+              "title": "Embedding nedir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Embedding nedir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Embedding nedir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-embedding-rag-02",
+              "title": "Vektör arama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Vektör arama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Vektör arama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-embedding-rag-03",
+              "title": "Chunking stratejisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Chunking stratejisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Chunking stratejisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-embedding-rag-04",
+              "title": "Retriever tasarımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Retriever tasarımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Retriever tasarımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-embedding-rag-05",
+              "title": "Basit RAG prototipi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Basit RAG prototipi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Basit RAG prototipi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-embedding-rag-checkpoint",
+              "title": "Embedding ve RAG kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "huggingface-course",
+                "langchain-docs",
+                "llamaindex-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "llm-uygulama",
+          "title": "LLM Uygulamaları",
+          "order": 4,
+          "summary": "LLM Uygulamaları modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-llm-uygulama-01",
+              "title": "API ile LLM çağırma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'API ile LLM çağırma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "API ile LLM çağırma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "intermediate-llm-uygulama-02",
+              "title": "Structured output",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Structured output' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Structured output konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "intermediate-llm-uygulama-03",
+              "title": "Tool/function calling mantığı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Tool/function calling mantığı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Tool/function calling mantığı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "intermediate-llm-uygulama-04",
+              "title": "Prompt injection riski",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Prompt injection riski' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Prompt injection riski konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "intermediate-llm-uygulama-05",
+              "title": "LLM uygulaması logging",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'LLM uygulaması logging' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "LLM uygulaması logging konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "intermediate-llm-uygulama-checkpoint",
+              "title": "LLM Uygulamaları kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "openai-api-docs",
+                "huggingface-transformers-docs",
+                "owasp-llm-top-10"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "deployment",
+          "title": "Deployment",
+          "order": 5,
+          "summary": "Deployment modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-deployment-01",
+              "title": "API endpoint tasarımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'API endpoint tasarımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "API endpoint tasarımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-deployment-02",
+              "title": "Docker temel akışı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Docker temel akışı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Docker temel akışı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-deployment-03",
+              "title": "Ortam değişkenleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Ortam değişkenleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Ortam değişkenleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-deployment-04",
+              "title": "Basit cloud deploy",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Basit cloud deploy' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Basit cloud deploy konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-deployment-05",
+              "title": "Health check ve log",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Health check ve log' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Health check ve log konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-deployment-checkpoint",
+              "title": "Deployment kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "fastapi-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "mlops",
+          "title": "MLOps",
+          "order": 6,
+          "summary": "MLOps modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-mlops-01",
+              "title": "Experiment tracking",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Experiment tracking' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Experiment tracking konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            },
+            {
+              "slug": "intermediate-mlops-02",
+              "title": "Model versioning",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Model versioning' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Model versioning konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            },
+            {
+              "slug": "intermediate-mlops-03",
+              "title": "Dataset versioning",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Dataset versioning' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Dataset versioning konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            },
+            {
+              "slug": "intermediate-mlops-04",
+              "title": "CI/CD fikri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'CI/CD fikri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "CI/CD fikri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            },
+            {
+              "slug": "intermediate-mlops-05",
+              "title": "Monitoring temelleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Monitoring temelleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Monitoring temelleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            },
+            {
+              "slug": "intermediate-mlops-checkpoint",
+              "title": "MLOps kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "mlflow-docs",
+                "docker-get-started"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "urun-analitigi",
+          "title": "Ürün Analitiği",
+          "order": 7,
+          "summary": "Ürün Analitiği modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-urun-analitigi-01",
+              "title": "Event tracking nedir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Event tracking nedir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Event tracking nedir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-urun-analitigi-02",
+              "title": "Funnel okuma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Funnel okuma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Funnel okuma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-urun-analitigi-03",
+              "title": "Retention metriği",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Retention metriği' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Retention metriği konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-urun-analitigi-04",
+              "title": "A/B test hipotezi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'A/B test hipotezi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "A/B test hipotezi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-urun-analitigi-05",
+              "title": "Öğrenme metriği tasarlama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Öğrenme metriği tasarlama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Öğrenme metriği tasarlama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-urun-analitigi-checkpoint",
+              "title": "Ürün Analitiği kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "microsoft-aspnet-core-docs",
+                "react-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "orta-proje",
+          "title": "Orta Seviye Proje",
+          "order": 8,
+          "summary": "Orta Seviye Proje modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "intermediate-orta-proje-01",
+              "title": "RAG problem seçimi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'RAG problem seçimi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "RAG problem seçimi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-orta-proje-02",
+              "title": "Bilgi tabanı hazırlığı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Bilgi tabanı hazırlığı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Bilgi tabanı hazırlığı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-orta-proje-03",
+              "title": "Retrieval değerlendirme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Retrieval değerlendirme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Retrieval değerlendirme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-orta-proje-04",
+              "title": "UI prototipi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'UI prototipi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "UI prototipi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-orta-proje-05",
+              "title": "Demo ve rapor",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "learningObjective": "Kullanıcı 'Demo ve rapor' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Demo ve rapor konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "intermediate-orta-proje-checkpoint",
+              "title": "Orta Seviye Proje kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "medium",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "openai-api-docs"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "İleri Seviye AI Uzmanı",
+      "order": 3,
+      "duration": "9-18+ ay",
+      "accentColor": "accent",
+      "target": "Üretim kalitesinde LLM/RAG/ajan sistemleri tasarlar, değerlendirir ve güvenli hale getirir.",
+      "slug": "advanced",
+      "recommendedDailyGoalXp": 40,
+      "units": [
+        {
+          "slug": "gelismis-llm",
+          "title": "Gelişmiş LLM Mimarisi",
+          "order": 1,
+          "summary": "Gelişmiş LLM Mimarisi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "always_open",
+          "lessons": [
+            {
+              "slug": "advanced-gelismis-llm-01",
+              "title": "Transformer sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Transformer sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Transformer sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            },
+            {
+              "slug": "advanced-gelismis-llm-02",
+              "title": "Attention mekanizması",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Attention mekanizması' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Attention mekanizması konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            },
+            {
+              "slug": "advanced-gelismis-llm-03",
+              "title": "Context window yönetimi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Context window yönetimi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Context window yönetimi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            },
+            {
+              "slug": "advanced-gelismis-llm-04",
+              "title": "Model seçimi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Model seçimi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Model seçimi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            },
+            {
+              "slug": "advanced-gelismis-llm-05",
+              "title": "Maliyet-kalite dengesi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Maliyet-kalite dengesi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Maliyet-kalite dengesi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            },
+            {
+              "slug": "advanced-gelismis-llm-checkpoint",
+              "title": "Gelişmiş LLM Mimarisi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "ajanlar",
+          "title": "AI Ajanları",
+          "order": 2,
+          "summary": "AI Ajanları modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-ajanlar-01",
+              "title": "Ajan nedir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Ajan nedir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Ajan nedir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-ajanlar-02",
+              "title": "Planlama ve araç kullanımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Planlama ve araç kullanımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Planlama ve araç kullanımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-ajanlar-03",
+              "title": "Memory tasarımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Memory tasarımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Memory tasarımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-ajanlar-04",
+              "title": "Multi-agent riskleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Multi-agent riskleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Multi-agent riskleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-ajanlar-05",
+              "title": "Ajan benchmark fikri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Ajan benchmark fikri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Ajan benchmark fikri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-ajanlar-checkpoint",
+              "title": "AI Ajanları kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "langchain-docs",
+                "llamaindex-docs",
+                "owasp-llm-top-10"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "degerlendirme",
+          "title": "LLM Değerlendirme",
+          "order": 3,
+          "summary": "LLM Değerlendirme modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-degerlendirme-01",
+              "title": "Eval set hazırlama",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Eval set hazırlama' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Eval set hazırlama konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-degerlendirme-02",
+              "title": "LLM-as-judge sınırları",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'LLM-as-judge sınırları' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "LLM-as-judge sınırları konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-degerlendirme-03",
+              "title": "RAGAS benzeri metrikler",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'RAGAS benzeri metrikler' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "RAGAS benzeri metrikler konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-degerlendirme-04",
+              "title": "Red-team testi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Red-team testi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Red-team testi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-degerlendirme-05",
+              "title": "Kalite dashboardu",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Kalite dashboardu' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Kalite dashboardu konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            },
+            {
+              "slug": "advanced-degerlendirme-checkpoint",
+              "title": "LLM Değerlendirme kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "nist-ai-rmf",
+                "owasp-llm-top-10"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "guvenlik",
+          "title": "AI Güvenliği",
+          "order": 4,
+          "summary": "AI Güvenliği modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-guvenlik-01",
+              "title": "Prompt injection",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Prompt injection' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Prompt injection konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            },
+            {
+              "slug": "advanced-guvenlik-02",
+              "title": "Data leakage",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Data leakage' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Data leakage konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            },
+            {
+              "slug": "advanced-guvenlik-03",
+              "title": "Jailbreak denemeleri",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Jailbreak denemeleri' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Jailbreak denemeleri konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            },
+            {
+              "slug": "advanced-guvenlik-04",
+              "title": "Access control",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Access control' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Access control konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            },
+            {
+              "slug": "advanced-guvenlik-05",
+              "title": "Güvenli agent tasarımı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Güvenli agent tasarımı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Güvenli agent tasarımı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            },
+            {
+              "slug": "advanced-guvenlik-checkpoint",
+              "title": "AI Güvenliği kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "finetuning",
+          "title": "Fine-tuning ve Adaptasyon",
+          "order": 5,
+          "summary": "Fine-tuning ve Adaptasyon modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-finetuning-01",
+              "title": "Fine-tuning ne zaman gerekir?",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Fine-tuning ne zaman gerekir?' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Fine-tuning ne zaman gerekir? konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "advanced-finetuning-02",
+              "title": "Veri formatı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Veri formatı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Veri formatı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "advanced-finetuning-03",
+              "title": "LoRA sezgisi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'LoRA sezgisi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "LoRA sezgisi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "advanced-finetuning-04",
+              "title": "Eğitim sonrası değerlendirme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Eğitim sonrası değerlendirme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Eğitim sonrası değerlendirme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "advanced-finetuning-05",
+              "title": "Maliyet ve risk analizi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Maliyet ve risk analizi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Maliyet ve risk analizi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            },
+            {
+              "slug": "advanced-finetuning-checkpoint",
+              "title": "Fine-tuning ve Adaptasyon kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "huggingface-transformers-docs",
+                "pytorch-tutorials"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "uretim-sistemleri",
+          "title": "Üretim Sistemleri",
+          "order": 6,
+          "summary": "Üretim Sistemleri modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-uretim-sistemleri-01",
+              "title": "Caching",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Caching' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "multiple_choice",
+                "prompt": "Caching konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "advanced-uretim-sistemleri-02",
+              "title": "Rate limit",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Rate limit' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Rate limit konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "advanced-uretim-sistemleri-03",
+              "title": "Queue ve worker",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Queue ve worker' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Queue ve worker konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "advanced-uretim-sistemleri-04",
+              "title": "Observability",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Observability' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Observability konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "advanced-uretim-sistemleri-05",
+              "title": "Incident response",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Incident response' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Incident response konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            },
+            {
+              "slug": "advanced-uretim-sistemleri-checkpoint",
+              "title": "Üretim Sistemleri kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "docker-get-started",
+                "mlflow-docs"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "arastirma",
+          "title": "Araştırma Okuryazarlığı",
+          "order": 7,
+          "summary": "Araştırma Okuryazarlığı modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-arastirma-01",
+              "title": "Makale okuma yöntemi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Makale okuma yöntemi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "code_fill_blank",
+                "prompt": "Makale okuma yöntemi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            },
+            {
+              "slug": "advanced-arastirma-02",
+              "title": "Ablation study",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Ablation study' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Ablation study konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            },
+            {
+              "slug": "advanced-arastirma-03",
+              "title": "Reproduction planı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Reproduction planı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Reproduction planı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            },
+            {
+              "slug": "advanced-arastirma-04",
+              "title": "SOTA iddialarını test etme",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'SOTA iddialarını test etme' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "SOTA iddialarını test etme konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            },
+            {
+              "slug": "advanced-arastirma-05",
+              "title": "Araştırma notu yazma",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Araştırma notu yazma' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Araştırma notu yazma konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            },
+            {
+              "slug": "advanced-arastirma-checkpoint",
+              "title": "Araştırma Okuryazarlığı kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "huggingface-course"
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "ileri-proje",
+          "title": "İleri Seviye Bitirme Projesi",
+          "order": 8,
+          "summary": "İleri Seviye Bitirme Projesi modülü mikro dersler, kontrol testi ve küçük uygulamalarla ilerler.",
+          "estimatedDays": 5,
+          "unlockRule": "previous_unit_completed",
+          "lessons": [
+            {
+              "slug": "advanced-ileri-proje-01",
+              "title": "Ürün fikri ve kullanıcı problemi",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Ürün fikri ve kullanıcı problemi' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "short_answer",
+                "prompt": "Ürün fikri ve kullanıcı problemi konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "advanced-ileri-proje-02",
+              "title": "Mimari tasarım",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Mimari tasarım' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "debug_task",
+                "prompt": "Mimari tasarım konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "advanced-ileri-proje-03",
+              "title": "Güvenlik ve eval planı",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 4,
+              "xpReward": 10,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Güvenlik ve eval planı' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "prompt_rewrite",
+                "prompt": "Güvenlik ve eval planı konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "advanced-ileri-proje-04",
+              "title": "Canlı demo",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Canlı demo' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "mini_notebook",
+                "prompt": "Canlı demo konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": false,
+                "requiresAiFeedback": true
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "advanced-ileri-proje-05",
+              "title": "Teknik vaka çalışması",
+              "lessonType": "micro_lesson",
+              "durationMinutes": 5,
+              "xpReward": 15,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "learningObjective": "Kullanıcı 'Teknik vaka çalışması' konusunu tek bir küçük beceri olarak anlayıp bir mini alıştırmada uygular.",
+              "contentPattern": [
+                "hook",
+                "one_concept",
+                "tiny_example",
+                "one_action_exercise",
+                "instant_feedback",
+                "next_step"
+              ],
+              "exercise": {
+                "type": "eval_choice",
+                "prompt": "Teknik vaka çalışması konusunu kullanarak 1 dakikalık mini görevi tamamla.",
+                "autoGradable": true,
+                "requiresAiFeedback": false
+              },
+              "completionCriteria": [
+                "İçerik görüntülendi",
+                "Mini alıştırma tamamlandı",
+                "En az %70 doğruluk veya AI mentor onayı"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            },
+            {
+              "slug": "advanced-ileri-proje-checkpoint",
+              "title": "İleri Seviye Bitirme Projesi kontrol testi",
+              "lessonType": "checkpoint_quiz",
+              "durationMinutes": 6,
+              "xpReward": 25,
+              "dailyEligible": true,
+              "difficulty": "hard",
+              "questionCount": 6,
+              "passingScorePercent": 70,
+              "completionCriteria": [
+                "Quiz tamamlandı",
+                "En az %70 başarı",
+                "Yanlışlardan kişisel tekrar listesi üretildi"
+              ],
+              "resourceSlugs": [
+                "owasp-llm-top-10",
+                "nist-ai-rmf",
+                "openai-api-docs"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "slug": "beginner-ml-mini-portfolio",
+      "level": "beginner",
+      "title": "Küçük ML Portföy Projesi",
+      "duration": "1-2 hafta",
+      "xpReward": 120,
+      "deliverables": [
+        "Notebook",
+        "README",
+        "Model sonucu",
+        "Kısa değerlendirme raporu"
+      ],
+      "rubric": [
+        {
+          "criterion": "Veri hazırlığı",
+          "points": 25
+        },
+        {
+          "criterion": "Model kurulumu",
+          "points": 25
+        },
+        {
+          "criterion": "Metrik yorumlama",
+          "points": 25
+        },
+        {
+          "criterion": "README açıklığı",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "slug": "beginner-llm-prompt-lab",
+      "level": "beginner",
+      "title": "LLM Prompt Laboratuvarı",
+      "duration": "3-5 gün",
+      "xpReward": 90,
+      "deliverables": [
+        "Prompt deneme tablosu",
+        "En iyi/kötü çıktılar",
+        "Güvenlik notu"
+      ],
+      "rubric": [
+        {
+          "criterion": "Prompt çeşitliliği",
+          "points": 30
+        },
+        {
+          "criterion": "Çıktı değerlendirme",
+          "points": 40
+        },
+        {
+          "criterion": "Risk farkındalığı",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "slug": "intermediate-rag-assistant",
+      "level": "intermediate",
+      "title": "Doküman Tabanlı RAG Asistanı",
+      "duration": "2-4 hafta",
+      "xpReward": 180,
+      "deliverables": [
+        "RAG API",
+        "Basit web arayüzü",
+        "Eval set",
+        "Demo videosu"
+      ],
+      "rubric": [
+        {
+          "criterion": "Retrieval kalitesi",
+          "points": 25
+        },
+        {
+          "criterion": "Yanıt doğruluğu",
+          "points": 25
+        },
+        {
+          "criterion": "Deployment",
+          "points": 20
+        },
+        {
+          "criterion": "Eval raporu",
+          "points": 20
+        },
+        {
+          "criterion": "UX açıklığı",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "slug": "intermediate-mlops-tracker",
+      "level": "intermediate",
+      "title": "MLOps Deney Takip Sistemi",
+      "duration": "1-3 hafta",
+      "xpReward": 150,
+      "deliverables": [
+        "MLflow deneyleri",
+        "Model karşılaştırması",
+        "Versiyon notları"
+      ],
+      "rubric": [
+        {
+          "criterion": "Deney takibi",
+          "points": 35
+        },
+        {
+          "criterion": "Metrik karşılaştırma",
+          "points": 30
+        },
+        {
+          "criterion": "Tekrarlanabilirlik",
+          "points": 25
+        },
+        {
+          "criterion": "Dokümantasyon",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "slug": "advanced-agent-production",
+      "level": "advanced",
+      "title": "Üretim Odaklı AI Ajan Sistemi",
+      "duration": "4-8 hafta",
+      "xpReward": 300,
+      "deliverables": [
+        "Agent mimarisi",
+        "Tool izin modeli",
+        "Eval ve red-team raporu",
+        "Canlı demo",
+        "Incident planı"
+      ],
+      "rubric": [
+        {
+          "criterion": "Mimari sağlamlık",
+          "points": 20
+        },
+        {
+          "criterion": "Araç güvenliği",
+          "points": 20
+        },
+        {
+          "criterion": "Eval kapsamı",
+          "points": 20
+        },
+        {
+          "criterion": "Üretim gözlemlenebilirliği",
+          "points": 20
+        },
+        {
+          "criterion": "Portföy sunumu",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "slug": "advanced-ai-security-redteam",
+      "level": "advanced",
+      "title": "LLM Güvenlik Red-Team Çalışması",
+      "duration": "2-4 hafta",
+      "xpReward": 220,
+      "deliverables": [
+        "Threat model",
+        "Saldırı senaryoları",
+        "Savunma önerileri",
+        "Tekrar test raporu"
+      ],
+      "rubric": [
+        {
+          "criterion": "Risk kapsamı",
+          "points": 30
+        },
+        {
+          "criterion": "Test derinliği",
+          "points": 30
+        },
+        {
+          "criterion": "Savunma uygulanabilirliği",
+          "points": 25
+        },
+        {
+          "criterion": "Rapor netliği",
+          "points": 15
+        }
+      ]
+    }
+  ],
+  "databaseSeedNotes": {
+    "recommendedTables": [
+      "LearningPaths",
+      "Units",
+      "Lessons",
+      "Exercises",
+      "Resources",
+      "LessonResources",
+      "Projects",
+      "ProjectRubrics",
+      "GamificationRules",
+      "Badges",
+      "Quests",
+      "NotificationTemplates",
+      "ExperimentDefinitions"
+    ],
+    "migrationNote": "Seed JSON doğrudan EF Core seeder'a çevrilebilir. Lesson completion ve XP transaction tabloları runtime verisi olduğu için seed'e eklenmez."
+  }
+}
