@@ -17,6 +17,14 @@ export type Lesson = {
     type: string
     requiresAiFeedback: boolean
   } | null
+  quizQuestions?: Array<{
+    id: string
+    prompt: string
+    options: Array<{
+      id: string
+      text: string
+    }>
+  }>
 }
 
 export type DashboardData = {

@@ -1,4 +1,5 @@
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Infrastructure;
 using AiEducation.Api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +10,16 @@ namespace AiEducation.Api.Controllers;
 
 [Authorize]
 [Route("api/v1/onboarding")]
-public sealed class OnboardingController(AppDbContext db) : ApiControllerBase
+public sealed class OnboardingController(AppDbContext db, AnalyticsService analyticsService) : ApiControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Complete(OnboardingRequest request, CancellationToken cancellationToken)
     {
+        if (request.DailyXpGoal is not (10 or 20 or 30 or 40 or 50))
+        {
+            return BadRequest(new { message = "Günlük XP hedefi 10, 20, 30, 40 veya 50 olmalıdır." });
+        }
+
         var userId = CurrentUserId();
         var user = await db.Users.FindAsync([userId], cancellationToken);
         var path = await db.LearningPaths.SingleOrDefaultAsync(x => x.Slug == request.LearningPathSlug, cancellationToken);
@@ -44,6 +50,11 @@ public sealed class OnboardingController(AppDbContext db) : ApiControllerBase
         }
 
         await db.SaveChangesAsync(cancellationToken);
+        await analyticsService.TrackAsync(userId, AnalyticsEvents.PathSelected, new
+        {
+            pathSlug = path.Slug,
+            request.DailyXpGoal
+        }, DateTimeOffset.UtcNow, cancellationToken);
         return Ok(new { user.DailyXpGoal, user.SelectedLearningPathSlug });
     }
 }

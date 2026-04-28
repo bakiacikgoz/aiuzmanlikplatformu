@@ -30,12 +30,24 @@ npm run dev
 - Üretim/SQL Server migration hedefi: `appsettings.json` içindeki SQL Server LocalDB connection string.
 - Development profili: LocalDB başlatılamayan makinelerde çalışabilmesi için SQLite fallback kullanır ve seed verisini otomatik içeri aktarır.
 - SQL Server migration dosyaları `src/AiEducation.Api/Data/Migrations` altındadır.
+- Migration üretirken Development SQLite ayarını kullanma; SQL Server hedefi için environment/config override ver.
 
 SQL Server LocalDB çalışıyorsa:
 
 ```powershell
+$env:ASPNETCORE_ENVIRONMENT="Migration"
+$env:Jwt__SigningKey="local-migration-signing-key-change-before-prod-32chars"
 dotnet ef database update --project src/AiEducation.Api/AiEducation.Api.csproj --startup-project src/AiEducation.Api/AiEducation.Api.csproj
 ```
+
+## Development Admin
+
+Development seed çalıştığında roller (`Admin`, `Learner`) ve dev-only admin hesabı oluşturulur:
+
+- E-posta: `admin@example.com`
+- Şifre: `Admin123!`
+
+Bu hesap sadece yerel geliştirme içindir; production ortamında varsayılan JWT signing key ve dev admin kullanılmamalıdır.
 
 ## Testler
 
@@ -51,4 +63,5 @@ Frontend:
 cd src/AiEducation.Web
 npm test
 npm run build
+npm run lint
 ```

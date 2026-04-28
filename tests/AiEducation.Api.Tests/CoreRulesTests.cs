@@ -43,6 +43,48 @@ public sealed class CoreRulesTests
     }
 
     [Fact]
+    public async Task GrantXp_enforces_quality_gate_duplicate_reference_and_daily_cap()
+    {
+        await using var db = TestDb.Create();
+        var user = new ApplicationUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = "learner@example.com",
+            Email = "learner@example.com",
+            TimeZoneId = "Europe/Istanbul",
+            DailyXpGoal = 20
+        };
+        db.Users.Add(user);
+        db.XpRules.Add(new XpRule
+        {
+            Id = Guid.NewGuid(),
+            Event = XpEvents.PracticeCompleted,
+            Xp = 15,
+            DailyCap = 20,
+            QualityGate = "non_blank_answer"
+        });
+        await db.SaveChangesAsync();
+
+        var service = new XpService(db);
+        var referenceOne = Guid.NewGuid();
+        var referenceTwo = Guid.NewGuid();
+        var referenceThree = Guid.NewGuid();
+        var now = DateTimeOffset.Parse("2026-04-28T08:00:00Z");
+
+        var first = await service.GrantXpAsync(user.Id, XpEvents.PracticeCompleted, 15, "Exercise", referenceOne, true, now);
+        var duplicate = await service.GrantXpAsync(user.Id, XpEvents.PracticeCompleted, 15, "Exercise", referenceOne, true, now.AddMinutes(1));
+        var capped = await service.GrantXpAsync(user.Id, XpEvents.PracticeCompleted, 15, "Exercise", referenceTwo, true, now.AddMinutes(2));
+        var overCap = await service.GrantXpAsync(user.Id, XpEvents.PracticeCompleted, 15, "Exercise", referenceThree, true, now.AddMinutes(3));
+
+        Assert.Equal(first.Id, duplicate.Id);
+        Assert.Equal(15, first.Amount);
+        Assert.Equal(5, capped.Amount);
+        Assert.Equal(0, overCap.Amount);
+        Assert.False(overCap.PassedQualityGate);
+        Assert.Equal(20, await db.XpTransactions.Where(x => x.UserId == user.Id && x.PassedQualityGate).SumAsync(x => x.Amount));
+    }
+
+    [Fact]
     public async Task Streak_uses_user_timezone_for_local_learning_day()
     {
         await using var db = TestDb.Create();
@@ -159,8 +201,20 @@ public sealed class CoreRulesTests
 
         var service = new LessonCompletionService(db, new XpService(db), new StreakService(db));
 
-        var blocked = await service.CompleteAsync(user.Id, lesson.Slug, exerciseSubmitted: false, DateTimeOffset.UtcNow);
-        var completed = await service.CompleteAsync(user.Id, lesson.Slug, exerciseSubmitted: true, DateTimeOffset.UtcNow);
+        var blocked = await service.CompleteAsync(user.Id, lesson.Slug, exerciseSubmitted: true, DateTimeOffset.UtcNow);
+        db.UserExerciseSubmissions.Add(new UserExerciseSubmission
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            LessonId = lesson.Id,
+            ExerciseId = lesson.Exercise.Id,
+            Answer = "AI olmayan bir otomasyon örneği: sabit kuralla klasöre taşıma.",
+            Feedback = "Kalite eşiğini geçti.",
+            PassedQualityGate = true,
+            CreatedAtUtc = DateTimeOffset.UtcNow
+        });
+        await db.SaveChangesAsync();
+        var completed = await service.CompleteAsync(user.Id, lesson.Slug, exerciseSubmitted: false, DateTimeOffset.UtcNow);
 
         Assert.False(blocked.Succeeded);
         Assert.Equal("Mini alıştırma tamamlanmadan ders bitirilemez.", blocked.Error);
@@ -168,4 +222,3 @@ public sealed class CoreRulesTests
         Assert.Equal(10, await db.XpTransactions.Where(x => x.UserId == user.Id).SumAsync(x => x.Amount));
     }
 }
-

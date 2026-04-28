@@ -2,15 +2,26 @@ import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import type { Lesson } from '../../shared/types'
 import { Badge, Button, Card, SecondaryButton } from '../../shared/ui'
-import { ExerciseSubmit } from '../practice/ExerciseSubmit'
+import { ExerciseSubmit, type ExerciseSubmitResult } from '../practice/ExerciseSubmit'
 
-export function LessonPlayer({ lesson, onComplete }: { lesson: Lesson; onComplete: () => Promise<void> }) {
+export function LessonPlayer({
+  lesson,
+  onComplete,
+  onExerciseSubmit,
+}: {
+  lesson: Lesson
+  onComplete: () => Promise<void>
+  onExerciseSubmit?: (answer: string) => Promise<ExerciseSubmitResult>
+}) {
   const [index, setIndex] = useState(0)
   const [status, setStatus] = useState<'idle' | 'saving' | 'done'>('idle')
+  const [exercisePassed, setExercisePassed] = useState(!lesson.exercise)
   const step = lesson.steps[index]
   const isLast = index === lesson.steps.length - 1
+  const canComplete = !lesson.exercise || exercisePassed
 
   async function complete() {
+    if (!canComplete) return
     setStatus('saving')
     await onComplete()
     setStatus('done')
@@ -38,7 +49,18 @@ export function LessonPlayer({ lesson, onComplete }: { lesson: Lesson; onComplet
       <article className="rounded-panel border border-border bg-[#f9fbff] p-5">
         <h2 className="text-xl font-semibold text-ink">{step.title}</h2>
         <p className="mt-3 leading-7 text-muted">{step.body}</p>
-        {step.key === 'exercise' ? <ExerciseSubmit prompt={step.body} onSubmit={async () => 'Cevabın kaydedildi. Dersi bitirebilirsin.'} /> : null}
+        {step.key === 'exercise' ? (
+          <ExerciseSubmit
+            prompt={step.body}
+            onSubmit={async (answer) => {
+              const result = onExerciseSubmit
+                ? await onExerciseSubmit(answer)
+                : { feedback: 'Cevabın kaydedildi. Dersi bitirebilirsin.', passedQualityGate: true }
+              setExercisePassed(Boolean(result.passedQualityGate))
+              return result
+            }}
+          />
+        ) : null}
       </article>
 
       <div className="mt-6 flex items-center justify-between gap-3">
@@ -47,9 +69,9 @@ export function LessonPlayer({ lesson, onComplete }: { lesson: Lesson; onComplet
           Geri
         </SecondaryButton>
         {isLast ? (
-          <Button onClick={complete} disabled={status === 'saving' || status === 'done'}>
+          <Button onClick={complete} disabled={status === 'saving' || status === 'done' || !canComplete}>
             <Check aria-hidden="true" />
-            {status === 'done' ? 'Tamamlandı' : 'Dersi tamamla'}
+            {status === 'done' ? 'Tamamlandı' : canComplete ? 'Dersi tamamla' : 'Alıştırmayı gönder'}
           </Button>
         ) : (
           <Button onClick={() => setIndex((value) => Math.min(lesson.steps.length - 1, value + 1))}>

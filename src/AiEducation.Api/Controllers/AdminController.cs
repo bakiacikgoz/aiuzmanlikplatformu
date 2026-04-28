@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AiEducation.Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Route("api/v1/admin")]
 public sealed class AdminController(AppDbContext db) : ApiControllerBase
 {
@@ -29,6 +29,12 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("learning-paths")]
     public async Task<IActionResult> CreatePath(AdminPathRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<LearningPath>(request.Slug, db.LearningPaths, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var path = new LearningPath
         {
             Id = Guid.NewGuid(),
@@ -46,6 +52,12 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("units")]
     public async Task<IActionResult> CreateUnit(AdminUnitRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<Unit>(request.Slug, db.Units, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var path = await db.LearningPaths.SingleOrDefaultAsync(x => x.Slug == request.LearningPathSlug, cancellationToken);
         if (path is null)
         {
@@ -68,6 +80,12 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("lessons")]
     public async Task<IActionResult> CreateLesson(AdminLessonRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<Lesson>(request.Slug, db.Lessons, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var unit = await db.Units.SingleOrDefaultAsync(x => x.Slug == request.UnitSlug, cancellationToken);
         if (unit is null)
         {
@@ -102,6 +120,16 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("resources")]
     public async Task<IActionResult> CreateResource(AdminResourceRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<Resource>(request.Slug, db.Resources, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+        if (!Uri.TryCreate(request.Url, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
+        {
+            return BadRequest(new { message = "Kaynak URL'si http/https olmalıdır." });
+        }
+
         var resource = new Resource { Id = Guid.NewGuid(), Slug = request.Slug, Title = request.Title, Url = request.Url, Type = request.Type, Summary = request.Summary ?? "" };
         db.Resources.Add(resource);
         await db.SaveChangesAsync(cancellationToken);
@@ -111,6 +139,12 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("badges")]
     public async Task<IActionResult> CreateBadge(AdminBadgeRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<Badge>(request.Slug, db.Badges, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var badge = new Badge { Id = Guid.NewGuid(), Slug = request.Slug, Title = request.Title, Condition = request.Condition };
         db.Badges.Add(badge);
         await db.SaveChangesAsync(cancellationToken);
@@ -120,6 +154,12 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("quests")]
     public async Task<IActionResult> CreateQuest(AdminQuestRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<Quest>(request.Slug, db.Quests, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var quest = new Quest { Id = Guid.NewGuid(), Slug = request.Slug, Title = request.Title, Cadence = request.Cadence, RewardXp = request.RewardXp, RewardGems = request.RewardGems };
         db.Quests.Add(quest);
         await db.SaveChangesAsync(cancellationToken);
@@ -129,10 +169,28 @@ public sealed class AdminController(AppDbContext db) : ApiControllerBase
     [HttpPost("notification-templates")]
     public async Task<IActionResult> CreateNotificationTemplate(AdminNotificationTemplateRequest request, CancellationToken cancellationToken)
     {
+        var validation = await ValidateSlugAsync<NotificationTemplate>(request.Slug, db.NotificationTemplates, cancellationToken);
+        if (validation is not null)
+        {
+            return validation;
+        }
+
         var template = new NotificationTemplate { Id = Guid.NewGuid(), Slug = request.Slug, Channel = request.Channel, Title = request.Title, Body = request.Body };
         db.NotificationTemplates.Add(template);
         await db.SaveChangesAsync(cancellationToken);
         return Created($"/api/v1/admin/notification-templates/{template.Id}", new { template.Id, template.Slug });
+    }
+
+    private async Task<IActionResult?> ValidateSlugAsync<TEntity>(string slug, DbSet<TEntity> set, CancellationToken cancellationToken)
+        where TEntity : class
+    {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(slug, "^[a-z0-9]+(?:-[a-z0-9]+)*$"))
+        {
+            return BadRequest(new { message = "Slug kebab-case olmalıdır." });
+        }
+
+        var exists = await set.AnyAsync(x => EF.Property<string>(x, "Slug") == slug, cancellationToken);
+        return exists ? Conflict(new { message = "Bu slug zaten kullanılıyor." }) : null;
     }
 }
 

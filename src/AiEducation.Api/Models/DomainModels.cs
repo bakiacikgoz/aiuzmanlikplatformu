@@ -67,6 +67,7 @@ public sealed class Lesson
     public Unit? Unit { get; set; }
     public Exercise? Exercise { get; set; }
     public List<LessonResource> LessonResources { get; set; } = [];
+    public List<QuizQuestion> QuizQuestions { get; set; } = [];
 }
 
 public sealed class Exercise
@@ -79,6 +80,21 @@ public sealed class Exercise
     public bool RequiresAiFeedback { get; set; }
     public string? CorrectAnswer { get; set; }
     public Lesson? Lesson { get; set; }
+}
+
+public sealed class UserExerciseSubmission
+{
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public Guid LessonId { get; set; }
+    public Guid ExerciseId { get; set; }
+    public string Answer { get; set; } = "";
+    public string Feedback { get; set; } = "";
+    public bool PassedQualityGate { get; set; }
+    public DateTimeOffset CreatedAtUtc { get; set; }
+    public ApplicationUser? User { get; set; }
+    public Lesson? Lesson { get; set; }
+    public Exercise? Exercise { get; set; }
 }
 
 public enum ExerciseType
@@ -140,6 +156,27 @@ public sealed class QuizAttempt
     public string WrongAnswersJson { get; set; } = "[]";
     public DateTimeOffset CreatedAtUtc { get; set; }
     public Lesson? Lesson { get; set; }
+}
+
+public sealed class QuizQuestion
+{
+    public Guid Id { get; set; }
+    public Guid LessonId { get; set; }
+    public string Prompt { get; set; } = default!;
+    public string Explanation { get; set; } = "";
+    public int SortOrder { get; set; }
+    public Lesson? Lesson { get; set; }
+    public List<QuizOption> Options { get; set; } = [];
+}
+
+public sealed class QuizOption
+{
+    public Guid Id { get; set; }
+    public Guid QuizQuestionId { get; set; }
+    public string Text { get; set; } = default!;
+    public bool IsCorrect { get; set; }
+    public int SortOrder { get; set; }
+    public QuizQuestion? QuizQuestion { get; set; }
 }
 
 public sealed class Project
@@ -270,6 +307,7 @@ public sealed class LeagueSeason
     public DateTimeOffset StartsAtUtc { get; set; }
     public DateTimeOffset EndsAtUtc { get; set; }
     public LeagueTier Tier { get; set; } = LeagueTier.Bronze;
+    public int GroupNumber { get; set; } = 1;
     public List<LeagueParticipant> Participants { get; set; } = [];
 }
 
@@ -323,6 +361,17 @@ public sealed class NotificationLog
     public string Status { get; set; } = "sent";
     public DateTimeOffset CreatedAtUtc { get; set; }
     public NotificationTemplate? NotificationTemplate { get; set; }
+}
+
+public sealed class NotificationPreference
+{
+    public Guid UserId { get; set; }
+    public bool MorningReminderEnabled { get; set; } = true;
+    public bool StreakReminderEnabled { get; set; } = true;
+    public bool ProjectReminderEnabled { get; set; } = true;
+    public bool EmailEnabled { get; set; } = false;
+    public DateTimeOffset UpdatedAtUtc { get; set; }
+    public ApplicationUser? User { get; set; }
 }
 
 public sealed class Experiment

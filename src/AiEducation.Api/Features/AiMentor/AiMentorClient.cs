@@ -2,7 +2,12 @@ namespace AiEducation.Api.Features.AiMentor;
 
 public sealed record AiMentorRequest(string Message, string? LessonSlug = null, string? Context = null);
 
-public sealed record AiMentorResponse(string Content, string SafetyNote);
+public sealed record AiMentorResponse(
+    string Content,
+    string SafetyNote,
+    string SuggestedNextStep,
+    double Confidence,
+    Dictionary<string, int>? RubricScores = null);
 
 public interface IAiMentorClient
 {
@@ -17,6 +22,18 @@ public sealed class MockAiMentorClient : IAiMentorClient
             ? "aktif ders bağlamına"
             : $"{request.LessonSlug} dersine";
         var content = $"Mock mentor: {lessonContext} göre kısa cevap: {request.Message}. Önce kavramı tek cümlede tanımla, sonra küçük bir örnekle pekiştir.";
-        return Task.FromResult(new AiMentorResponse(content, "Bu MVP yanıtı mock sağlayıcıdan gelir; gerçek API anahtarı frontend'e konulmaz."));
+        return Task.FromResult(new AiMentorResponse(
+            content,
+            "Bu MVP yanıtı mock sağlayıcıdan gelir; gerçek API anahtarı frontend'e konulmaz.",
+            "Cevabını bir örnek ve bir karşı örnekle güçlendir.",
+            0.82,
+            request.Context?.Contains("Rubrik", StringComparison.OrdinalIgnoreCase) == true
+                ? new Dictionary<string, int>
+                {
+                    ["teknik_dogruluk"] = 4,
+                    ["uygulanabilirlik"] = 4,
+                    ["dokumantasyon"] = 3
+                }
+                : null));
     }
 }

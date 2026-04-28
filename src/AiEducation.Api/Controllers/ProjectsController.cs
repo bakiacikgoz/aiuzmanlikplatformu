@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Features.Gamification;
 using AiEducation.Api.Infrastructure;
 using AiEducation.Api.Models;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AiEducation.Api.Controllers;
 
 [Route("api/v1")]
-public sealed class ProjectsController(AppDbContext db, XpService xpService) : ApiControllerBase
+public sealed class ProjectsController(AppDbContext db, XpService xpService, AnalyticsService analyticsService) : ApiControllerBase
 {
     [HttpGet("projects")]
     public async Task<IActionResult> Projects(CancellationToken cancellationToken)
@@ -64,6 +65,12 @@ public sealed class ProjectsController(AppDbContext db, XpService xpService) : A
             return NotFound();
         }
 
+        if (!IsValidHttpUrl(request.RepositoryUrl) && !IsValidHttpUrl(request.DemoUrl))
+        {
+            return BadRequest(new { message = "Geçerli bir GitHub veya demo URL'si gir." });
+        }
+
+        var now = DateTimeOffset.UtcNow;
         var submission = new ProjectSubmission
         {
             Id = Guid.NewGuid(),
@@ -72,7 +79,7 @@ public sealed class ProjectsController(AppDbContext db, XpService xpService) : A
             RepositoryUrl = request.RepositoryUrl,
             DemoUrl = request.DemoUrl ?? "",
             Notes = request.Notes ?? "",
-            CreatedAtUtc = DateTimeOffset.UtcNow
+            CreatedAtUtc = now
         };
         submission.PortfolioEvidence.Add(new PortfolioEvidence
         {
@@ -80,13 +87,25 @@ public sealed class ProjectsController(AppDbContext db, XpService xpService) : A
             UserId = CurrentUserId(),
             Title = project.Title,
             EvidenceUrl = string.IsNullOrWhiteSpace(request.RepositoryUrl) ? request.DemoUrl ?? "" : request.RepositoryUrl,
-            CreatedAtUtc = DateTimeOffset.UtcNow
+            CreatedAtUtc = now
         });
         db.ProjectSubmissions.Add(submission);
         await db.SaveChangesAsync(cancellationToken);
-        await xpService.GrantXpAsync(CurrentUserId(), XpEvents.ProjectStepSubmitted, Math.Min(40, project.XpReward), "ProjectSubmission", submission.Id, true, DateTimeOffset.UtcNow, cancellationToken);
+        var alreadyAwarded = await db.XpTransactions.AnyAsync(
+            x => x.UserId == CurrentUserId()
+                && x.EventType == XpEvents.ProjectSubmitted
+                && x.ReferenceType == "Project"
+                && x.ReferenceId == project.Id,
+            cancellationToken);
+        var xpTransaction = await xpService.GrantXpAsync(CurrentUserId(), XpEvents.ProjectSubmitted, project.XpReward, "Project", project.Id, true, now, cancellationToken);
+        await analyticsService.TrackAsync(CurrentUserId(), AnalyticsEvents.ProjectSubmitted, new
+        {
+            project.Slug,
+            submission.Id,
+            xpGranted = alreadyAwarded ? 0 : xpTransaction.Amount
+        }, now, cancellationToken);
 
-        return Ok(new { submission.Id, portfolioEvidenceCreated = true });
+        return Ok(new { submission.Id, portfolioEvidenceCreated = true, xpGranted = alreadyAwarded ? 0 : xpTransaction.Amount });
     }
 
     [HttpGet("portfolio/me")]
@@ -95,10 +114,15 @@ public sealed class ProjectsController(AppDbContext db, XpService xpService) : A
     {
         var evidence = await db.PortfolioEvidence
             .Where(x => x.UserId == CurrentUserId())
-            .OrderByDescending(x => x.CreatedAtUtc)
             .Select(x => new { x.Title, x.EvidenceUrl, x.CreatedAtUtc })
             .ToListAsync(cancellationToken);
-        return Ok(evidence);
+        return Ok(evidence.OrderByDescending(x => x.CreatedAtUtc));
+    }
+
+    private static bool IsValidHttpUrl(string? value)
+    {
+        return Uri.TryCreate(value, UriKind.Absolute, out var uri)
+            && uri.Scheme is "http" or "https";
     }
 }
 

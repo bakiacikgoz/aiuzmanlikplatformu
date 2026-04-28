@@ -1,10 +1,16 @@
 using System.Text.Json;
 using AiEducation.Api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace AiEducation.Api.Data;
 
-public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment environment, ILogger<SeedDataImporter> logger)
+public sealed class SeedDataImporter(
+    AppDbContext db,
+    IWebHostEnvironment environment,
+    ILogger<SeedDataImporter> logger,
+    RoleManager<IdentityRole<Guid>> roleManager,
+    UserManager<ApplicationUser> userManager)
 {
     public async Task ImportAsync(CancellationToken cancellationToken = default)
     {
@@ -26,6 +32,7 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
         await ImportNotificationsAsync(root, cancellationToken);
         await ImportExperimentsAsync(root, cancellationToken);
         await ImportSubscriptionPlansAsync(cancellationToken);
+        await EnsureRolesAndDevelopmentAdminAsync(cancellationToken);
     }
 
     private async Task ImportResourcesAsync(JsonElement root, CancellationToken cancellationToken)
@@ -102,12 +109,18 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
     private async Task ImportLessonAsync(Unit unit, JsonElement lessonElement, CancellationToken cancellationToken)
     {
         var lessonSlug = Text(lessonElement, "slug");
-        if (await db.Lessons.AnyAsync(x => x.Slug == lessonSlug, cancellationToken))
+        var existingLesson = await db.Lessons
+            .Include(x => x.QuizQuestions)
+            .ThenInclude(x => x.Options)
+            .SingleOrDefaultAsync(x => x.Slug == lessonSlug, cancellationToken);
+        if (existingLesson is not null)
         {
+            await EnsureQuizQuestionsAsync(existingLesson, cancellationToken);
             return;
         }
 
         var title = Text(lessonElement, "title");
+        var beginnerDraft = BeginnerDraft(lessonSlug, title);
         var lesson = new Lesson
         {
             Id = Guid.NewGuid(),
@@ -120,8 +133,8 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
             DailyEligible = Bool(lessonElement, "dailyEligible", true),
             Difficulty = Text(lessonElement, "difficulty", "easy"),
             LearningObjective = Text(lessonElement, "learningObjective", $"Kullanıcı {title} konusunu tek küçük beceri olarak uygular."),
-            MiniExplanation = $"{title} konusunu tek kavram üzerinden öğren. Gerektiğinde AI mentordan farklı bir örnek iste.",
-            TinyExample = $"Örnek: {title} gerçek bir AI öğrenme görevinde küçük ve ölçülebilir bir davranışa dönüştürülür.",
+            MiniExplanation = beginnerDraft.MiniExplanation,
+            TinyExample = beginnerDraft.TinyExample,
             CompletionCriteriaJson = JsonSerializer.Serialize(StringArray(lessonElement, "completionCriteria")),
             PassingScorePercent = Int(lessonElement, "passingScorePercent", 70),
             QuestionCount = Int(lessonElement, "questionCount", 0),
@@ -142,6 +155,7 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
 
         db.Lessons.Add(lesson);
         await db.SaveChangesAsync(cancellationToken);
+        await EnsureQuizQuestionsAsync(lesson, cancellationToken);
 
         foreach (var resourceSlug in StringArray(lessonElement, "resourceSlugs"))
         {
@@ -185,6 +199,7 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
 
         await ImportQuestsAsync(config.GetProperty("dailyQuests"), QuestCadence.Daily, cancellationToken);
         await ImportQuestsAsync(config.GetProperty("weeklyQuests"), QuestCadence.Weekly, cancellationToken);
+        await EnsureCoreDailyQuestsAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 
@@ -309,6 +324,173 @@ public sealed class SeedDataImporter(AppDbContext db, IWebHostEnvironment enviro
             new SubscriptionPlan { Id = Guid.NewGuid(), Slug = "plus", Name = "Plus", MonthlyAiMessageLimit = 200 },
             new SubscriptionPlan { Id = Guid.NewGuid(), Slug = "pro", Name = "Pro", MonthlyAiMessageLimit = 1000 });
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task EnsureRolesAndDevelopmentAdminAsync(CancellationToken cancellationToken)
+    {
+        foreach (var role in new[] { "Admin", "Learner" })
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+            }
+        }
+
+        if (!environment.IsDevelopment())
+        {
+            return;
+        }
+
+        const string email = "admin@example.com";
+        var admin = await userManager.FindByEmailAsync(email);
+        if (admin is null)
+        {
+            admin = new ApplicationUser
+            {
+                Id = Guid.NewGuid(),
+                UserName = email,
+                Email = email,
+                DisplayName = "Development Admin",
+                TimeZoneId = "Europe/Istanbul",
+                DailyXpGoal = 20,
+                CreatedAtUtc = DateTimeOffset.UtcNow,
+                EmailConfirmed = true
+            };
+            var created = await userManager.CreateAsync(admin, "Admin123!");
+            if (!created.Succeeded)
+            {
+                logger.LogWarning("Development admin could not be created: {Errors}", string.Join("; ", created.Errors.Select(x => x.Description)));
+                return;
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(admin, "Admin"))
+        {
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
+
+        if (!await userManager.IsInRoleAsync(admin, "Learner"))
+        {
+            await userManager.AddToRoleAsync(admin, "Learner");
+        }
+
+        if (!await db.UserStreaks.AnyAsync(x => x.UserId == admin.Id, cancellationToken))
+        {
+            db.UserStreaks.Add(new UserStreak { UserId = admin.Id });
+        }
+
+        var freePlan = await db.SubscriptionPlans.SingleOrDefaultAsync(x => x.Slug == "free", cancellationToken);
+        if (freePlan is not null && !await db.UserSubscriptions.AnyAsync(x => x.UserId == admin.Id, cancellationToken))
+        {
+            db.UserSubscriptions.Add(new UserSubscription
+            {
+                Id = Guid.NewGuid(),
+                UserId = admin.Id,
+                SubscriptionPlanId = freePlan.Id,
+                Status = "active",
+                CreatedAtUtc = DateTimeOffset.UtcNow
+            });
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task EnsureCoreDailyQuestsAsync(CancellationToken cancellationToken)
+    {
+        var coreQuests = new[]
+        {
+            new Quest { Id = Guid.NewGuid(), Slug = "daily-micro-lesson", Title = "Bir AI Byte tamamla", Cadence = QuestCadence.Daily, RewardXp = 10, RewardGems = 5 },
+            new Quest { Id = Guid.NewGuid(), Slug = "daily-practice", Title = "Bir pratik cevabı gönder", Cadence = QuestCadence.Daily, RewardXp = 0, RewardGems = 3 },
+            new Quest { Id = Guid.NewGuid(), Slug = "daily-review", Title = "Bir quiz veya hata tekrarı yap", Cadence = QuestCadence.Daily, RewardXp = 0, RewardGems = 3 }
+        };
+
+        foreach (var quest in coreQuests)
+        {
+            if (!await db.Quests.AnyAsync(x => x.Slug == quest.Slug, cancellationToken))
+            {
+                db.Quests.Add(quest);
+            }
+        }
+    }
+
+    private async Task EnsureQuizQuestionsAsync(Lesson lesson, CancellationToken cancellationToken)
+    {
+        if (lesson.QuizQuestions.Count > 0 || (!lesson.LessonType.Contains("quiz", StringComparison.OrdinalIgnoreCase) && lesson.QuestionCount <= 0))
+        {
+            return;
+        }
+
+        var drafts = new[]
+        {
+            new
+            {
+                Prompt = $"{lesson.Title} için en doğru çalışma yaklaşımı hangisidir?",
+                Explanation = "MVP quizleri kavramı uygulama, örnekleme ve kalite kontrol üzerinden ölçer.",
+                Options = new[] { "Tek kavramı örnekle açıklamak", "Sadece ezber tanım yazmak", "Kaynak linklerini listelemek", "Konuyu atlamak" },
+                Correct = 0
+            },
+            new
+            {
+                Prompt = "Kaliteli bir AI öğrenme cevabında ne bulunmalıdır?",
+                Explanation = "Kısa cevaplar gerekçe veya örnek içerdiğinde kalite eşiğini geçer.",
+                Options = new[] { "Gerekçe veya mini örnek", "Boş metin", "Rastgele anahtar kelime", "Sadece emoji" },
+                Correct = 0
+            },
+            new
+            {
+                Prompt = "AI Mentor MVP'de hangi taraftan çağrılır?",
+                Explanation = "AI sağlayıcıları frontend'den değil backend abstraction arkasından çağrılır.",
+                Options = new[] { "Backend IAiMentorClient üzerinden", "Doğrudan tarayıcıdan", "CSS dosyasından", "LocalStorage içinden" },
+                Correct = 0
+            }
+        };
+
+        for (var index = 0; index < drafts.Length; index++)
+        {
+            var draft = drafts[index];
+            var question = new QuizQuestion
+            {
+                Id = Guid.NewGuid(),
+                LessonId = lesson.Id,
+                Prompt = draft.Prompt,
+                Explanation = draft.Explanation,
+                SortOrder = index + 1
+            };
+
+            for (var optionIndex = 0; optionIndex < draft.Options.Length; optionIndex++)
+            {
+                question.Options.Add(new QuizOption
+                {
+                    Id = Guid.NewGuid(),
+                    Text = draft.Options[optionIndex],
+                    IsCorrect = optionIndex == draft.Correct,
+                    SortOrder = optionIndex + 1
+                });
+            }
+
+            db.QuizQuestions.Add(question);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static (string MiniExplanation, string TinyExample) BeginnerDraft(string lessonSlug, string title)
+    {
+        return lessonSlug switch
+        {
+            "beginner-ai-okuryazarligi-01" => (
+                "Yapay zeka, açıkça yazılmış sabit kurallardan ziyade verideki örüntülerden tahmin veya karar üreten sistemlerin genel adıdır. Her otomasyon AI değildir; AI dediğimizde belirsizlikle çalışan, örneklerden genelleme yapan ve çıktısı olasılıksal olabilen bir yapı ararız.",
+                "Örnek: Gelen e-postayı sadece gönderen adına göre klasöre taşımak otomasyondur; mesaj içeriğinden spam olasılığı tahmin etmek AI örneğidir."),
+            "beginner-ai-okuryazarligi-02" => (
+                "Bir AI ürününde problem tanımı, modelden önce gelir. Kullanıcı ihtiyacı, karar anı, başarı metriği ve kabul edilebilir hata sınırı net değilse en iyi model bile doğru ürünü üretmez.",
+                "Örnek: 'Destek taleplerini sınıflandır' demek yetmez; hangi sınıflar, kaç saniye içinde, yüzde kaç doğrulukla ve insan kontrolü nerede olacak soruları belirlenir."),
+            "beginner-ai-okuryazarligi-03" => (
+                "Veri kalitesi AI sistemlerinin tavanını belirler. Eksik, yanlı, güncel olmayan veya yanlış etiketlenmiş veri modelin öğrenmesini bozar; bu yüzden veri kontrol listesi teknik geliştirme kadar önemlidir.",
+                "Örnek: Sadece başarılı müşteri görüşmelerinden eğitilen bir satış asistanı itirazları tanımakta zayıf kalır."),
+            _ => (
+                $"{title} konusunu tek kavram üzerinden öğren. Gerektiğinde AI mentordan farklı bir örnek iste.",
+                $"Örnek: {title} gerçek bir AI öğrenme görevinde küçük ve ölçülebilir bir davranışa dönüştürülür.")
+        };
     }
 
     private static string Text(JsonElement element, string property, string fallback = "")

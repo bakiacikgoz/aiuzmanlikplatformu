@@ -20,7 +20,12 @@ test('Dashboard renders today card and progress cards', () => {
     />,
   )
 
-  expect(screen.getByText('Bugünkü AI Byte')).toBeInTheDocument()
+  expect(screen.getByText('Sıfırdan Uygulamalı Yapay Zeka Mühendisliği')).toBeInTheDocument()
+  expect(screen.getByText(/Bugün 3 dakikalık bir AI Byte ile serini koru/)).toBeInTheDocument()
+  expect(screen.getByText('AI Temelleri')).toBeInTheDocument()
+  expect(screen.getByText('Applied AI Developer')).toBeInTheDocument()
+  expect(screen.getByText('AI Engineer')).toBeInTheDocument()
+  expect(screen.getByText('12 aylık timeline')).toBeInTheDocument()
   expect(screen.getByText('Yapay zeka nedir, ne değildir?')).toBeInTheDocument()
   expect(screen.getByText('45 XP')).toBeInTheDocument()
   expect(screen.getByText('3 gün')).toBeInTheDocument()

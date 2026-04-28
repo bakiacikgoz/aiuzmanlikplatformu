@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Features.Learning;
 using AiEducation.Api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AiEducation.Api.Controllers;
 
 [Route("api/v1")]
-public sealed class LearningController(AppDbContext db, LessonCompletionService completionService) : ApiControllerBase
+public sealed class LearningController(AppDbContext db, LessonCompletionService completionService, AnalyticsService analyticsService) : ApiControllerBase
 {
     [HttpGet("learning-paths")]
     public async Task<ActionResult<IReadOnlyList<object>>> Paths(CancellationToken cancellationToken)
@@ -70,6 +71,8 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
     {
         var lesson = await db.Lessons
             .Include(x => x.Exercise)
+            .Include(x => x.QuizQuestions)
+            .ThenInclude(x => x.Options)
             .Include(x => x.LessonResources)
             .ThenInclude(x => x.Resource)
             .SingleOrDefaultAsync(x => x.Slug == slug, cancellationToken);
@@ -101,6 +104,16 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
                 x.Resource.Title,
                 x.Resource.Url,
                 x.Resource.Type
+            }),
+            QuizQuestions = lesson.QuizQuestions.OrderBy(x => x.SortOrder).Select(question => new
+            {
+                question.Id,
+                question.Prompt,
+                Options = question.Options.OrderBy(option => option.SortOrder).Select(option => new
+                {
+                    option.Id,
+                    option.Text
+                })
             })
         };
     }
@@ -130,6 +143,12 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
             });
             await db.SaveChangesAsync(cancellationToken);
         }
+
+        await analyticsService.TrackAsync(userId, AnalyticsEvents.LessonStarted, new
+        {
+            lesson.Slug,
+            lesson.Id
+        }, DateTimeOffset.UtcNow, cancellationToken);
 
         return Ok(new { started = true });
     }

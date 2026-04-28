@@ -1,29 +1,14 @@
-import {
-  BarChart3,
-  Bell,
-  BookOpen,
-  Bot,
-  FolderKanban,
-  Home,
-  Library,
-  ListChecks,
-  LogOut,
-  Map,
-  Medal,
-  PanelLeft,
-  Settings,
-  Trophy,
-} from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AppShell } from './app/AppShell'
 import { AdminLessonForm, type AdminLessonPayload } from './features/admin/AdminLessonForm'
 import { DashboardView } from './features/dashboard/DashboardView'
 import { LeagueCard } from './features/leagues/LeagueCard'
 import { LessonPlayer } from './features/lessonPlayer/LessonPlayer'
 import { ExerciseSubmit } from './features/practice/ExerciseSubmit'
-import { api, clearSession, getToken, post, saveSession, type AuthSession } from './shared/api'
+import { api, getToken, post, saveSession, type AuthSession } from './shared/api'
 import type { DashboardData, League, Lesson } from './shared/types'
 import { Badge, Button, Card, CardHeader, Field, SecondaryButton, TextArea, TextInput } from './shared/ui'
 
@@ -71,63 +56,6 @@ function ProtectedApp() {
         <Route path="/analytics" element={<AnalyticsPage />} />
       </Routes>
     </AppShell>
-  )
-}
-
-function AppShell({ children }: { children: ReactNode }) {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const nav = [
-    ['/', 'Ana Panel', Home],
-    ['/today', 'Bugünkü AI Byte', BookOpen],
-    ['/roadmap', 'Yol Haritası', Map],
-    ['/practice', 'Pratik Alanı', ListChecks],
-    ['/projects', 'Projeler', FolderKanban],
-    ['/leagues', 'Ligler', Trophy],
-    ['/quests', 'Görevler', Medal],
-    ['/portfolio', 'Portföy', PanelLeft],
-    ['/resources', 'Kaynaklar', Library],
-    ['/ai-mentor', 'AI Mentor', Bot],
-    ['/notifications', 'Bildirimler', Bell],
-    ['/admin', 'Admin', Settings],
-    ['/analytics', 'Analytics', BarChart3],
-  ] as const
-
-  async function logout() {
-    try {
-      await post('/auth/logout', {})
-    } finally {
-      clearSession()
-      queryClient.clear()
-      navigate('/login')
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-background text-ink lg:grid lg:grid-cols-[280px_1fr]">
-      <aside className="border-b border-border bg-white p-4 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-white">AI</div>
-          <div>
-            <p className="text-sm font-bold text-ink">AI Byte</p>
-            <p className="text-xs text-muted">Mikro öğrenme MVP</p>
-          </div>
-        </div>
-        <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-          {nav.map(([href, label, Icon]) => (
-            <Link key={href} to={href} className="inline-flex min-w-fit items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted transition hover:bg-[#eef3ff] hover:text-primary">
-              <Icon aria-hidden="true" className="size-4" />
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <SecondaryButton onClick={logout} className="mt-6 w-full">
-          <LogOut aria-hidden="true" />
-          Çıkış
-        </SecondaryButton>
-      </aside>
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:p-8">{children}</main>
-    </div>
   )
 }
 
@@ -269,12 +197,26 @@ function LessonPage() {
   const queryClient = useQueryClient()
   const { data } = useQuery({ queryKey: ['lesson', slug], queryFn: () => api<Lesson>(`/lessons/${slug}`), enabled: Boolean(slug) })
   const mutation = useMutation({
-    mutationFn: () => post(`/lessons/${slug}/complete`, { exerciseSubmitted: true, answer: 'Tamamlandı' }),
+    mutationFn: () => post(`/lessons/${slug}/complete`, { exerciseSubmitted: false, answer: '' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
   })
 
   if (!data) return <Loading title="Ders yükleniyor" />
-  return <LessonPlayer lesson={data} onComplete={async () => { await mutation.mutateAsync() }} />
+  return (
+    <LessonPlayer
+      lesson={data}
+      onExerciseSubmit={async (answer) => {
+        if (!data.exercise?.id) {
+          return { feedback: 'Bu ders için alıştırma bulunamadı.', passedQualityGate: true }
+        }
+
+        return await post(`/exercises/${data.exercise.id}/submit`, { answer })
+      }}
+      onComplete={async () => {
+        await mutation.mutateAsync()
+      }}
+    />
+  )
 }
 
 function PracticePage() {
@@ -289,16 +231,40 @@ function PracticePage() {
 }
 
 function QuizPage() {
-  const [score, setScore] = useState(80)
-  const mutation = useMutation({ mutationFn: () => post('/quizzes/beginner-ai-okuryazarligi-01/attempts', { scorePercent: score, wrongAnswers: score >= 70 ? [] : ['q1'] }) })
+  const lessonSlug = 'beginner-ai-okuryazarligi-checkpoint'
+  const { data: lesson } = useQuery({ queryKey: ['quiz-lesson', lessonSlug], queryFn: () => api<Lesson>(`/lessons/${lessonSlug}`) })
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const mutation = useMutation({ mutationFn: () => post<{ scorePercent: number; passed: boolean; xpGranted: number }>(`/quizzes/${lessonSlug}/attempts`, { answers }) })
   return (
     <Page title="Quiz Sonuç">
       <Card>
-        <Field label="Skor">
-          <TextInput type="number" value={score} onChange={(event) => setScore(Number(event.target.value))} />
-        </Field>
-        <Button className="mt-4" onClick={() => mutation.mutate()}>Quiz gönder</Button>
-        {mutation.isSuccess ? <p className="mt-3 text-sm text-[#168c83]">Quiz sonucu kaydedildi.</p> : null}
+        <div className="grid gap-4">
+          {lesson?.quizQuestions?.map((question) => (
+            <fieldset key={question.id} className="rounded-xl border border-border p-4">
+              <legend className="px-1 text-sm font-bold text-ink">{question.prompt}</legend>
+              <div className="mt-3 grid gap-2">
+                {question.options.map((option) => (
+                  <label key={option.id} className="flex items-center gap-2 text-sm text-muted">
+                    <input
+                      type="radio"
+                      name={question.id}
+                      value={option.id}
+                      checked={answers[question.id] === option.id}
+                      onChange={() => setAnswers((value) => ({ ...value, [question.id]: option.id }))}
+                    />
+                    {option.text}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+        </div>
+        <Button className="mt-4" disabled={!lesson?.quizQuestions?.length || Object.keys(answers).length === 0} onClick={() => mutation.mutate()}>Quiz gönder</Button>
+        {mutation.data ? (
+          <p className="mt-3 text-sm text-[#168c83]">
+            Skor {mutation.data.scorePercent}. {mutation.data.passed ? `${mutation.data.xpGranted} XP kazandın.` : 'Tekrar gözden geçir.'}
+          </p>
+        ) : null}
       </Card>
     </Page>
   )

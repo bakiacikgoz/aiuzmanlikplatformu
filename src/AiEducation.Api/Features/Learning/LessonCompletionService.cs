@@ -1,4 +1,5 @@
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Features.Gamification;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,12 @@ namespace AiEducation.Api.Features.Learning;
 
 public sealed record LessonCompletionResult(bool Succeeded, string? Error = null, int XpGranted = 0);
 
-public sealed class LessonCompletionService(AppDbContext db, XpService xpService, StreakService streakService)
+public sealed class LessonCompletionService(
+    AppDbContext db,
+    XpService xpService,
+    StreakService streakService,
+    QuestProgressService? questProgressService = null,
+    AnalyticsService? analyticsService = null)
 {
     public async Task<LessonCompletionResult> CompleteAsync(
         Guid userId,
@@ -23,7 +29,14 @@ public sealed class LessonCompletionService(AppDbContext db, XpService xpService
             return new LessonCompletionResult(false, "Ders bulunamadı.");
         }
 
-        if (!exerciseSubmitted)
+        var hasRequiredSubmission = lesson.Exercise is null || await db.UserExerciseSubmissions.AnyAsync(
+            x => x.UserId == userId
+                && x.LessonId == lesson.Id
+                && x.ExerciseId == lesson.Exercise.Id
+                && x.PassedQualityGate,
+            cancellationToken);
+
+        if (!hasRequiredSubmission)
         {
             return new LessonCompletionResult(false, "Mini alıştırma tamamlanmadan ders bitirilemez.");
         }
@@ -53,7 +66,7 @@ public sealed class LessonCompletionService(AppDbContext db, XpService xpService
         progress.ScorePercent = Math.Max(progress.ScorePercent ?? 0, lesson.PassingScorePercent);
         await db.SaveChangesAsync(cancellationToken);
 
-        await xpService.GrantXpAsync(
+        var xpTransaction = await xpService.GrantXpAsync(
             userId,
             XpEvents.MicroLessonCompleted,
             lesson.XpReward,
@@ -64,37 +77,21 @@ public sealed class LessonCompletionService(AppDbContext db, XpService xpService
             cancellationToken);
 
         await streakService.ApplyLearningActivityAsync(userId, completedAtUtc, cancellationToken);
-        await CompleteDailyQuestAsync(userId, completedAtUtc, cancellationToken);
-
-        return new LessonCompletionResult(true, XpGranted: lesson.XpReward);
-    }
-
-    private async Task CompleteDailyQuestAsync(Guid userId, DateTimeOffset completedAtUtc, CancellationToken cancellationToken)
-    {
-        var user = await db.Users.FindAsync([userId], cancellationToken);
-        var localDate = StreakService.ToLocalDate(completedAtUtc, user?.TimeZoneId ?? "Europe/Istanbul");
-        var quest = await db.Quests.FirstOrDefaultAsync(x => x.Slug == "daily-micro-lesson", cancellationToken);
-        if (quest is null)
+        if (questProgressService is not null)
         {
-            return;
+            await questProgressService.MarkCompletedAsync(userId, "daily-micro-lesson", completedAtUtc, cancellationToken);
         }
 
-        var userQuest = await db.UserQuests.SingleOrDefaultAsync(
-            x => x.UserId == userId && x.QuestId == quest.Id && x.LocalDate == localDate,
-            cancellationToken);
-        if (userQuest is null)
+        if (analyticsService is not null)
         {
-            userQuest = new Models.UserQuest
+            await analyticsService.TrackAsync(userId, AnalyticsEvents.LessonCompleted, new
             {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                QuestId = quest.Id,
-                LocalDate = localDate
-            };
-            db.UserQuests.Add(userQuest);
+                lesson.Slug,
+                lesson.Id,
+                exerciseSubmitted
+            }, completedAtUtc, cancellationToken);
         }
 
-        userQuest.Completed = true;
-        await db.SaveChangesAsync(cancellationToken);
+        return new LessonCompletionResult(true, XpGranted: xpTransaction.Amount);
     }
 }

@@ -17,7 +17,6 @@ public sealed class NotificationsController(AppDbContext db) : ApiControllerBase
         var logs = await db.NotificationLogs
             .Include(x => x.NotificationTemplate)
             .Where(x => x.UserId == CurrentUserId())
-            .OrderByDescending(x => x.CreatedAtUtc)
             .Select(x => new
             {
                 x.Id,
@@ -26,6 +25,7 @@ public sealed class NotificationsController(AppDbContext db) : ApiControllerBase
                 Template = x.NotificationTemplate == null ? null : new { x.NotificationTemplate.Title, x.NotificationTemplate.Body }
             })
             .ToListAsync(cancellationToken);
+        logs = logs.OrderByDescending(x => x.CreatedAtUtc).ToList();
 
         if (logs.Count == 0)
         {
@@ -42,6 +42,18 @@ public sealed class NotificationsController(AppDbContext db) : ApiControllerBase
                 };
                 db.NotificationLogs.Add(log);
                 await db.SaveChangesAsync(cancellationToken);
+                logs = await db.NotificationLogs
+                    .Include(x => x.NotificationTemplate)
+                    .Where(x => x.UserId == CurrentUserId())
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.Status,
+                        x.CreatedAtUtc,
+                        Template = x.NotificationTemplate == null ? null : new { x.NotificationTemplate.Title, x.NotificationTemplate.Body }
+                    })
+                    .ToListAsync(cancellationToken);
+                logs = logs.OrderByDescending(x => x.CreatedAtUtc).ToList();
             }
         }
 

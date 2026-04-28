@@ -27,7 +27,7 @@ public sealed class ExperimentsController(AppDbContext db, ExperimentAssignmentS
     }
 
     [HttpPost("admin/experiments")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(AdminExperimentRequest request, CancellationToken cancellationToken)
     {
         var experiment = new Experiment
@@ -47,7 +47,7 @@ public sealed class ExperimentsController(AppDbContext db, ExperimentAssignmentS
     }
 
     [HttpPatch("admin/experiments/{id:guid}")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Guid id, UpdateExperimentRequest request, CancellationToken cancellationToken)
     {
         var experiment = await db.Experiments.FindAsync([id], cancellationToken);

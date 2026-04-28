@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AiEducation.Api.Features.Experimentation;
 
-public sealed class ExperimentAssignmentService(AppDbContext db)
+public sealed class ExperimentAssignmentService(AppDbContext db, AnalyticsService? analyticsService = null)
 {
     public async Task<ExperimentAssignment> AssignAsync(
         Guid userId,
@@ -38,6 +39,16 @@ public sealed class ExperimentAssignmentService(AppDbContext db)
 
         db.ExperimentAssignments.Add(assignment);
         await db.SaveChangesAsync(cancellationToken);
+
+        if (analyticsService is not null)
+        {
+            await analyticsService.TrackAsync(userId, AnalyticsEvents.ExperimentAssigned, new
+            {
+                experiment.Key,
+                variant = variant.Key
+            }, assignment.AssignedAtUtc, cancellationToken);
+        }
+
         return assignment;
     }
 
@@ -62,7 +73,7 @@ public sealed class ExperimentAssignmentService(AppDbContext db)
 
     private static int StableBucket(Guid userId, string experimentKey)
     {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{userId:N}:{experimentKey}"));
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{userId:N}{experimentKey}"));
         return BitConverter.ToUInt16(bytes, 0);
     }
 }

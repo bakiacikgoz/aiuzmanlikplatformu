@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AiEducation.Api.Data;
 using AiEducation.Api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,7 +21,7 @@ public sealed class JwtOptions
 
 public sealed record AuthResult(string AccessToken, DateTimeOffset ExpiresAtUtc, string RefreshToken);
 
-public sealed class TokenService(AppDbContext db, IOptions<JwtOptions> options)
+public sealed class TokenService(AppDbContext db, IOptions<JwtOptions> options, UserManager<ApplicationUser> userManager)
 {
     private readonly JwtOptions _options = options.Value;
 
@@ -29,13 +30,15 @@ public sealed class TokenService(AppDbContext db, IOptions<JwtOptions> options)
         var expires = DateTimeOffset.UtcNow.AddMinutes(_options.AccessTokenMinutes);
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var claims = new[]
+        var roles = await userManager.GetRolesAsync(user);
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
             new Claim(ClaimTypes.Name, user.DisplayName)
         };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: _options.Issuer,

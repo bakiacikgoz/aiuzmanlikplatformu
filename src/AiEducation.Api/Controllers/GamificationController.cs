@@ -1,4 +1,5 @@
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Features.Gamification;
 using AiEducation.Api.Features.Leagues;
 using AiEducation.Api.Infrastructure;
@@ -11,14 +12,18 @@ namespace AiEducation.Api.Controllers;
 
 [Authorize]
 [Route("api/v1")]
-public sealed class GamificationController(AppDbContext db, XpService xpService, LeagueService leagueService) : ApiControllerBase
+public sealed class GamificationController(
+    AppDbContext db,
+    XpService xpService,
+    LeagueService leagueService,
+    AnalyticsService analyticsService) : ApiControllerBase
 {
     [HttpGet("gamification/me")]
     public async Task<IActionResult> Me(CancellationToken cancellationToken)
     {
         var userId = CurrentUserId();
         var user = await db.Users.FindAsync([userId], cancellationToken);
-        var totalXp = await db.XpTransactions.Where(x => x.UserId == userId).SumAsync(x => x.Amount, cancellationToken);
+        var totalXp = await db.XpTransactions.Where(x => x.UserId == userId && x.PassedQualityGate).SumAsync(x => x.Amount, cancellationToken);
         var streak = await db.UserStreaks.SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken);
         var localDate = StreakService.ToLocalDate(DateTimeOffset.UtcNow, user?.TimeZoneId ?? "Europe/Istanbul");
         var quests = await DailyQuestPayloads(userId, localDate, cancellationToken);
@@ -44,8 +49,10 @@ public sealed class GamificationController(AppDbContext db, XpService xpService,
     [HttpPost("quests/{id:guid}/claim")]
     public async Task<IActionResult> ClaimQuest(Guid id, CancellationToken cancellationToken)
     {
+        var user = await db.Users.FindAsync([CurrentUserId()], cancellationToken);
+        var localDate = StreakService.ToLocalDate(DateTimeOffset.UtcNow, user?.TimeZoneId ?? "Europe/Istanbul");
         var userQuest = await db.UserQuests.Include(x => x.Quest).SingleOrDefaultAsync(
-            x => x.UserId == CurrentUserId() && x.QuestId == id,
+            x => x.UserId == CurrentUserId() && x.QuestId == id && x.LocalDate == localDate,
             cancellationToken);
         if (userQuest is null || !userQuest.Completed)
         {
@@ -56,7 +63,16 @@ public sealed class GamificationController(AppDbContext db, XpService xpService,
         {
             userQuest.Claimed = true;
             await db.SaveChangesAsync(cancellationToken);
-            await xpService.GrantXpAsync(CurrentUserId(), XpEvents.QuestClaimed, userQuest.Quest?.RewardXp ?? 0, "Quest", id, true, DateTimeOffset.UtcNow, cancellationToken);
+            if (userQuest.Quest?.RewardXp > 0)
+            {
+                await xpService.GrantXpAsync(CurrentUserId(), XpEvents.QuestClaimed, userQuest.Quest.RewardXp, "Quest", id, true, DateTimeOffset.UtcNow, cancellationToken);
+            }
+
+            await analyticsService.TrackAsync(CurrentUserId(), AnalyticsEvents.QuestClaimed, new
+            {
+                questId = id,
+                questSlug = userQuest.Quest?.Slug
+            }, DateTimeOffset.UtcNow, cancellationToken);
         }
 
         return Ok(new { claimed = true });

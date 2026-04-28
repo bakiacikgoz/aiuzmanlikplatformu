@@ -6,6 +6,7 @@ export type AuthSession = {
   userId: string
   displayName: string
   email: string
+  roles: string[]
 }
 
 export function getToken() {
@@ -15,6 +16,17 @@ export function getToken() {
 export function saveSession(session: AuthSession) {
   localStorage.setItem('ai_education_token', session.accessToken)
   localStorage.setItem('ai_education_user', JSON.stringify(session))
+}
+
+export function getSession(): AuthSession | null {
+  const raw = localStorage.getItem('ai_education_user')
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw) as AuthSession
+    return { ...parsed, roles: parsed.roles ?? [] }
+  } catch {
+    return null
+  }
 }
 
 export function clearSession() {

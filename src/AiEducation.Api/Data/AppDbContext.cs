@@ -13,10 +13,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Unit> Units => Set<Unit>();
     public DbSet<Lesson> Lessons => Set<Lesson>();
     public DbSet<Exercise> Exercises => Set<Exercise>();
+    public DbSet<UserExerciseSubmission> UserExerciseSubmissions => Set<UserExerciseSubmission>();
     public DbSet<Resource> Resources => Set<Resource>();
     public DbSet<LessonResource> LessonResources => Set<LessonResource>();
     public DbSet<UserPathEnrollment> UserPathEnrollments => Set<UserPathEnrollment>();
     public DbSet<UserLessonProgress> UserLessonProgresses => Set<UserLessonProgress>();
+    public DbSet<QuizQuestion> QuizQuestions => Set<QuizQuestion>();
+    public DbSet<QuizOption> QuizOptions => Set<QuizOption>();
     public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ProjectSubmission> ProjectSubmissions => Set<ProjectSubmission>();
@@ -33,6 +36,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<LeagueParticipant> LeagueParticipants => Set<LeagueParticipant>();
     public DbSet<NotificationTemplate> NotificationTemplates => Set<NotificationTemplate>();
     public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     public DbSet<Experiment> Experiments => Set<Experiment>();
     public DbSet<ExperimentVariant> ExperimentVariants => Set<ExperimentVariant>();
     public DbSet<ExperimentAssignment> ExperimentAssignments => Set<ExperimentAssignment>();
@@ -75,6 +79,36 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasForeignKey<Exercise>(x => x.LessonId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<UserExerciseSubmission>()
+            .HasIndex(x => new { x.UserId, x.ExerciseId, x.CreatedAtUtc });
+
+        builder.Entity<UserExerciseSubmission>()
+            .HasOne(x => x.Exercise)
+            .WithMany()
+            .HasForeignKey(x => x.ExerciseId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<UserExerciseSubmission>()
+            .HasOne(x => x.Lesson)
+            .WithMany()
+            .HasForeignKey(x => x.LessonId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<QuizQuestion>()
+            .HasOne(x => x.Lesson)
+            .WithMany(x => x.QuizQuestions)
+            .HasForeignKey(x => x.LessonId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<QuizOption>()
+            .HasOne(x => x.QuizQuestion)
+            .WithMany(x => x.Options)
+            .HasForeignKey(x => x.QuizQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<XpTransaction>()
+            .HasIndex(x => new { x.UserId, x.EventType, x.ReferenceType, x.ReferenceId });
+
         builder.Entity<ExperimentAssignment>()
             .HasIndex(x => new { x.UserId, x.ExperimentKey })
             .IsUnique();
@@ -82,6 +116,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         builder.Entity<RefreshToken>()
             .HasIndex(x => x.TokenHash)
             .IsUnique();
+
+        builder.Entity<NotificationPreference>().HasKey(x => x.UserId);
+        builder.Entity<NotificationPreference>()
+            .HasOne(x => x.User)
+            .WithOne()
+            .HasForeignKey<NotificationPreference>(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<UserLessonProgress>()
             .HasIndex(x => new { x.UserId, x.LessonId })
