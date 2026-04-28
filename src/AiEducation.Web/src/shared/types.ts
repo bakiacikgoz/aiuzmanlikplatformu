@@ -27,6 +27,61 @@ export type Lesson = {
   }>
 }
 
+export type ContentStatus = 'Draft' | 'ReadyForReview' | 'Published' | 'NeedsRevision' | 'Archived'
+
+export type AdminLessonDto = {
+  id: string
+  slug: string
+  title: string
+  unitId: string | null
+  unitSlug?: string | null
+  status: ContentStatus
+  isArchived: boolean
+  learningObjective: string
+  estimatedMinutes: number
+  miniExplanation: string
+  miniExample: string
+  nextStep: string
+  exercisePrompt?: string
+  resourceIds?: string[]
+  xpReward: number
+  sortOrder: number
+  qualityScore: number
+}
+
+export type AdminUnitDto = {
+  id: string
+  slug: string
+  title: string
+  learningPathSlug?: string
+  sortOrder: number
+}
+
+export type AdminResourceDto = {
+  id: string
+  slug: string
+  title: string
+  url: string
+  type: string
+  summary?: string
+}
+
+export type QuizOptionDto = {
+  id?: string
+  text: string
+  sortOrder: number
+  isCorrect?: boolean
+}
+
+export type QuizQuestionDto = {
+  id: string
+  questionText: string
+  questionType: 'multiple_choice'
+  sortOrder: number
+  explanation?: string
+  options: QuizOptionDto[]
+}
+
 export type DashboardData = {
   user: {
     displayName: string
@@ -48,6 +103,8 @@ export type DashboardData = {
 export type League = {
   name: string
   tier: string
+  startsAtUtc?: string
+  endsAtUtc?: string
   participants: Array<{
     rank: number
     displayName: string

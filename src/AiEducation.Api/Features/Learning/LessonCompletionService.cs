@@ -23,7 +23,7 @@ public sealed class LessonCompletionService(
     {
         var lesson = await db.Lessons
             .Include(x => x.Exercise)
-            .SingleOrDefaultAsync(x => x.Slug == lessonSlug, cancellationToken);
+            .SingleOrDefaultAsync(x => x.Slug == lessonSlug && x.Status == Models.ContentStatus.Published && !x.IsArchived, cancellationToken);
         if (lesson is null)
         {
             return new LessonCompletionResult(false, "Ders bulunamadı.");

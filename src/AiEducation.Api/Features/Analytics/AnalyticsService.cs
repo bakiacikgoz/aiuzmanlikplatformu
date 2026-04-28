@@ -21,6 +21,10 @@ public static class AnalyticsEvents
     public const string ProjectSubmitted = "ProjectSubmitted";
     public const string AIMessageSent = "AIMessageSent";
     public const string ExperimentAssigned = "ExperimentAssigned";
+    public const string LeagueSeasonClosed = "LeagueSeasonClosed";
+    public const string LeagueUserPromoted = "LeagueUserPromoted";
+    public const string LeagueUserDemoted = "LeagueUserDemoted";
+    public const string LeagueUserProtected = "LeagueUserProtected";
 }
 
 public sealed class AnalyticsService(AppDbContext db)

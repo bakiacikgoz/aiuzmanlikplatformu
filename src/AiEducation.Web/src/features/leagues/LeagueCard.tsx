@@ -3,11 +3,17 @@ import type { League } from '../../shared/types'
 import { Badge, Card, CardHeader } from '../../shared/ui'
 
 export function LeagueCard({ league }: { league: League }) {
+  const seasonEnd = league.endsAtUtc ? new Date(league.endsAtUtc).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' }) : null
+  const topParticipants = league.participants.slice(0, 8)
+  const currentUser = league.participants.find((participant) => participant.isCurrentUser)
+  const visibleParticipants = currentUser && !topParticipants.some((participant) => participant.isCurrentUser) ? [...topParticipants, currentUser] : topParticipants
+
   return (
     <Card>
-      <CardHeader title={league.name} description={`${league.tier} ligi · İlk 10 üst lige çıkar`} />
+      <CardHeader title={league.name} description={`${league.tier} ligi · Ilk 10 ust lige cikar${seasonEnd ? ` · Sezon bitis ${seasonEnd}` : ''}`} />
+      {league.participants.length === 0 ? <p className="rounded-xl border border-border bg-white p-4 text-sm text-muted">Bu sezonda henuz katilimci yok.</p> : null}
       <div className="flex flex-col gap-2">
-        {league.participants.slice(0, 8).map((participant) => (
+        {visibleParticipants.map((participant) => (
           <div
             key={`${participant.rank}-${participant.displayName}`}
             className={`flex items-center justify-between rounded-xl border px-3 py-2 ${

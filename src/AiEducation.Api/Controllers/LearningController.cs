@@ -26,7 +26,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
                 x.Level,
                 x.Description,
                 UnitCount = x.Units.Count,
-                LessonCount = x.Units.SelectMany(u => u.Lessons).Count()
+                LessonCount = x.Units.SelectMany(u => u.Lessons).Count(l => l.Status == Models.ContentStatus.Published && !l.IsArchived)
             })
             .ToListAsync(cancellationToken);
         return Ok(paths);
@@ -54,7 +54,9 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
             {
                 unit.Slug,
                 unit.Title,
-                Lessons = unit.Lessons.Select(lesson => new
+                Lessons = unit.Lessons
+                    .Where(lesson => lesson.Status == Models.ContentStatus.Published && !lesson.IsArchived)
+                    .Select(lesson => new
                 {
                     lesson.Slug,
                     lesson.Title,
@@ -75,7 +77,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
             .ThenInclude(x => x.Options)
             .Include(x => x.LessonResources)
             .ThenInclude(x => x.Resource)
-            .SingleOrDefaultAsync(x => x.Slug == slug, cancellationToken);
+            .SingleOrDefaultAsync(x => x.Slug == slug && x.Status == Models.ContentStatus.Published && !x.IsArchived, cancellationToken);
         if (lesson is null)
         {
             return NotFound();
@@ -89,6 +91,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
             lesson.XpReward,
             lesson.Difficulty,
             lesson.LearningObjective,
+            Status = lesson.Status.ToString(),
             Exercise = lesson.Exercise is null ? null : new
             {
                 lesson.Exercise.Id,
@@ -105,7 +108,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
                 x.Resource.Url,
                 x.Resource.Type
             }),
-            QuizQuestions = lesson.QuizQuestions.OrderBy(x => x.SortOrder).Select(question => new
+            QuizQuestions = lesson.QuizQuestions.Where(x => x.IsActive).OrderBy(x => x.SortOrder).Select(question => new
             {
                 question.Id,
                 question.Prompt,
@@ -122,7 +125,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
     [Authorize]
     public async Task<IActionResult> Start(string slug, CancellationToken cancellationToken)
     {
-        var lesson = await db.Lessons.SingleOrDefaultAsync(x => x.Slug == slug, cancellationToken);
+        var lesson = await db.Lessons.SingleOrDefaultAsync(x => x.Slug == slug && x.Status == Models.ContentStatus.Published && !x.IsArchived, cancellationToken);
         if (lesson is null)
         {
             return NotFound();
@@ -180,7 +183,7 @@ public sealed class LearningController(AppDbContext db, LessonCompletionService 
             new("exercise", "Şimdi sen dene", lesson.Exercise?.Prompt ?? "Konuyu kendi cümlenle açıkla."),
             new("feedback", "Anında geri bildirim", lesson.Exercise?.RequiresAiFeedback == true ? "Cevabın AI mentor rubriğine göre değerlendirilecek." : "Cevabın otomatik kontrol edilir."),
             new("reward", "Ödül", $"{lesson.XpReward} XP kazanırsın. Kriterler: {string.Join(", ", criteria)}"),
-            new("next", "Sonraki küçük adım", "Bir sonraki AI Byte veya pratik görevine geç.")
+            new("next", "Sonraki küçük adım", string.IsNullOrWhiteSpace(lesson.NextStep) ? "Bir sonraki AI Byte veya pratik görevine geç." : lesson.NextStep)
         ];
     }
 }

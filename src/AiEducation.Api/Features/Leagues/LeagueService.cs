@@ -1,4 +1,5 @@
 using AiEducation.Api.Data;
+using AiEducation.Api.Features.Analytics;
 using AiEducation.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,11 +32,12 @@ public sealed class LeagueService(AppDbContext db)
     public async Task<LeagueSeason> GetOrCreateCurrentSeasonAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var now = DateTimeOffset.UtcNow;
-        var seasons = await db.LeagueSeasons
+        var seasons = (await db.LeagueSeasons
             .Include(x => x.Participants)
+            .ToListAsync(cancellationToken))
             .Where(x => x.StartsAtUtc <= now && x.EndsAtUtc > now)
             .OrderBy(x => x.GroupNumber)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         var season = seasons.FirstOrDefault(x => x.Participants.Any(p => p.UserId == userId))
             ?? seasons.FirstOrDefault(x => x.Participants.Count < 30);
@@ -58,15 +60,17 @@ public sealed class LeagueService(AppDbContext db)
         if (season.Participants.All(x => x.UserId != userId))
         {
             var user = await db.Users.FindAsync([userId], cancellationToken);
-            season.Participants.Add(new LeagueParticipant
+            var participant = new LeagueParticipant
             {
                 Id = Guid.NewGuid(),
+                LeagueSeasonId = season.Id,
                 UserId = userId,
                 LeagueTier = LeagueTier.Bronze,
                 DisplayName = user?.DisplayName ?? "Learner",
                 JoinedAtUtc = user?.CreatedAtUtc ?? now,
                 WeeklyXp = weeklyXp
-            });
+            };
+            db.LeagueParticipants.Add(participant);
         }
         else
         {
@@ -86,10 +90,10 @@ public sealed class LeagueService(AppDbContext db)
     public async Task RefreshWeeklyXpAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var now = DateTimeOffset.UtcNow;
-        var season = await db.LeagueSeasons
+        var season = (await db.LeagueSeasons
             .Include(x => x.Participants)
-            .Where(x => x.StartsAtUtc <= now && x.EndsAtUtc > now && x.Participants.Any(p => p.UserId == userId))
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken))
+            .FirstOrDefault(x => x.StartsAtUtc <= now && x.EndsAtUtc > now && x.Participants.Any(p => p.UserId == userId));
         if (season is null)
         {
             return;
@@ -100,11 +104,154 @@ public sealed class LeagueService(AppDbContext db)
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task RefreshCurrentSeasonAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var seasons = (await db.LeagueSeasons
+            .Include(x => x.Participants)
+            .ToListAsync(cancellationToken))
+            .Where(x => x.StartsAtUtc <= now && x.EndsAtUtc > now)
+            .ToList();
+
+        foreach (var participant in seasons.SelectMany(x => x.Participants))
+        {
+            var season = seasons.Single(x => x.Id == participant.LeagueSeasonId);
+            participant.WeeklyXp = await WeeklyXpAsync(participant.UserId, season.StartsAtUtc, season.EndsAtUtc, cancellationToken);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CloseSeasonAsync(Guid seasonId, CancellationToken cancellationToken = default)
+    {
+        var season = await db.LeagueSeasons
+            .Include(x => x.Participants)
+            .SingleOrDefaultAsync(x => x.Id == seasonId, cancellationToken);
+        if (season is null || season.ClosedAtUtc is not null)
+        {
+            return;
+        }
+
+        foreach (var participant in season.Participants)
+        {
+            participant.WeeklyXp = await WeeklyXpAsync(participant.UserId, season.StartsAtUtc, season.EndsAtUtc, cancellationToken);
+        }
+
+        var results = CalculateSeasonResults(season.Participants, season.EndsAtUtc);
+        foreach (var result in results)
+        {
+            var participant = season.Participants.Single(x => x.UserId == result.UserId);
+            participant.Rank = result.Rank;
+            switch (result.Movement)
+            {
+                case LeagueMovement.Promote:
+                    participant.LeagueTier = Promote(participant.LeagueTier);
+                    AddLeagueEvent(AnalyticsEvents.LeagueUserPromoted, participant, season);
+                    break;
+                case LeagueMovement.Demote:
+                    participant.LeagueTier = Demote(participant.LeagueTier);
+                    AddLeagueEvent(AnalyticsEvents.LeagueUserDemoted, participant, season);
+                    break;
+                case LeagueMovement.Stay when season.EndsAtUtc - participant.JoinedAtUtc < TimeSpan.FromDays(14) && result.Rank >= Math.Max(1, season.Participants.Count - 4):
+                    AddLeagueEvent(AnalyticsEvents.LeagueUserProtected, participant, season);
+                    break;
+            }
+        }
+
+        season.ClosedAtUtc = DateTimeOffset.UtcNow;
+        db.AnalyticsEvents.Add(new AnalyticsEvent
+        {
+            Id = Guid.NewGuid(),
+            EventName = AnalyticsEvents.LeagueSeasonClosed,
+            PropertiesJson = $$"""{"seasonId":"{{season.Id}}","participantCount":{{season.Participants.Count}}}""",
+            CreatedAtUtc = DateTimeOffset.UtcNow
+        });
+
+        await db.SaveChangesAsync(cancellationToken);
+        await EnsureNextSeasonAsync(cancellationToken);
+    }
+
+    public async Task EnsureNextSeasonAsync(CancellationToken cancellationToken = default)
+    {
+        var latest = (await db.LeagueSeasons.ToListAsync(cancellationToken))
+            .OrderByDescending(x => x.EndsAtUtc)
+            .FirstOrDefault();
+        if (latest is null)
+        {
+            var start = StartOfWeekUtc(DateTimeOffset.UtcNow);
+            db.LeagueSeasons.Add(new LeagueSeason
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Bronze {start:yyyy-MM-dd} G1",
+                StartsAtUtc = start,
+                EndsAtUtc = start.AddDays(7),
+                Tier = LeagueTier.Bronze,
+                GroupNumber = 1
+            });
+            await db.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        var nextStart = latest.EndsAtUtc;
+        var exists = await db.LeagueSeasons.AnyAsync(x => x.StartsAtUtc == nextStart && x.GroupNumber == latest.GroupNumber, cancellationToken);
+        if (!exists)
+        {
+            db.LeagueSeasons.Add(new LeagueSeason
+            {
+                Id = Guid.NewGuid(),
+                Name = $"{latest.Tier} {nextStart:yyyy-MM-dd} G{latest.GroupNumber}",
+                StartsAtUtc = nextStart,
+                EndsAtUtc = nextStart.AddDays(7),
+                Tier = latest.Tier,
+                GroupNumber = latest.GroupNumber
+            });
+            await db.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task RolloverIfNeededAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var seasons = (await db.LeagueSeasons.ToListAsync(cancellationToken))
+            .Where(x => x.EndsAtUtc <= now && x.ClosedAtUtc == null)
+            .Select(x => x.Id)
+            .ToList();
+
+        foreach (var seasonId in seasons)
+        {
+            await CloseSeasonAsync(seasonId, cancellationToken);
+        }
+
+        await EnsureNextSeasonAsync(cancellationToken);
+    }
+
     private static DateTimeOffset StartOfWeekUtc(DateTimeOffset now)
     {
         var date = now.UtcDateTime.Date;
         var delta = ((int)date.DayOfWeek + 6) % 7;
         return new DateTimeOffset(date.AddDays(-delta), TimeSpan.Zero);
+    }
+
+    private static LeagueTier Promote(LeagueTier tier)
+    {
+        return tier == LeagueTier.Diamond ? tier : (LeagueTier)((int)tier + 1);
+    }
+
+    private static LeagueTier Demote(LeagueTier tier)
+    {
+        return tier == LeagueTier.Bronze ? tier : (LeagueTier)((int)tier - 1);
+    }
+
+    private void AddLeagueEvent(string eventName, LeagueParticipant participant, LeagueSeason season)
+    {
+        db.AnalyticsEvents.Add(new AnalyticsEvent
+        {
+            Id = Guid.NewGuid(),
+            UserId = participant.UserId,
+            EventName = eventName,
+            PropertiesJson = $$"""{"seasonId":"{{season.Id}}","rank":{{participant.Rank}},"tier":"{{participant.LeagueTier}}"}""",
+            CreatedAtUtc = DateTimeOffset.UtcNow
+        });
     }
 
     private async Task<int> WeeklyXpAsync(Guid userId, DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc, CancellationToken cancellationToken)

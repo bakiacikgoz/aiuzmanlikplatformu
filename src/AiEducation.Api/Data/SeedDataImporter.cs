@@ -112,9 +112,27 @@ public sealed class SeedDataImporter(
         var existingLesson = await db.Lessons
             .Include(x => x.QuizQuestions)
             .ThenInclude(x => x.Options)
+            .Include(x => x.LessonResources)
             .SingleOrDefaultAsync(x => x.Slug == lessonSlug, cancellationToken);
         if (existingLesson is not null)
         {
+            existingLesson.Status = ContentStatus.Published;
+            existingLesson.IsArchived = false;
+            if (string.IsNullOrWhiteSpace(existingLesson.NextStep))
+            {
+                existingLesson.NextStep = NextStepFor(existingLesson.Title);
+            }
+
+            foreach (var resourceSlug in StringArray(lessonElement, "resourceSlugs"))
+            {
+                var resource = await db.Resources.SingleOrDefaultAsync(x => x.Slug == resourceSlug, cancellationToken);
+                if (resource is not null && existingLesson.LessonResources.All(x => x.ResourceId != resource.Id))
+                {
+                    db.LessonResources.Add(new LessonResource { LessonId = existingLesson.Id, ResourceId = resource.Id });
+                }
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
             await EnsureQuizQuestionsAsync(existingLesson, cancellationToken);
             return;
         }
@@ -135,6 +153,9 @@ public sealed class SeedDataImporter(
             LearningObjective = Text(lessonElement, "learningObjective", $"Kullanıcı {title} konusunu tek küçük beceri olarak uygular."),
             MiniExplanation = beginnerDraft.MiniExplanation,
             TinyExample = beginnerDraft.TinyExample,
+            NextStep = NextStepFor(title),
+            Status = ContentStatus.Published,
+            IsArchived = false,
             CompletionCriteriaJson = JsonSerializer.Serialize(StringArray(lessonElement, "completionCriteria")),
             PassingScorePercent = Int(lessonElement, "passingScorePercent", 70),
             QuestionCount = Int(lessonElement, "questionCount", 0),
@@ -199,6 +220,7 @@ public sealed class SeedDataImporter(
 
         await ImportQuestsAsync(config.GetProperty("dailyQuests"), QuestCadence.Daily, cancellationToken);
         await ImportQuestsAsync(config.GetProperty("weeklyQuests"), QuestCadence.Weekly, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
         await EnsureCoreDailyQuestsAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -228,9 +250,22 @@ public sealed class SeedDataImporter(
         foreach (var projectElement in root.GetProperty("projects").EnumerateArray())
         {
             var slug = Text(projectElement, "slug");
-            if (await db.Projects.AnyAsync(x => x.Slug == slug, cancellationToken))
+            var existingProject = await db.Projects.SingleOrDefaultAsync(x => x.Slug == slug, cancellationToken);
+            if (existingProject is not null)
             {
+                if (existingProject.Level.Equals("beginner", StringComparison.OrdinalIgnoreCase)
+                    && !existingProject.DeliverablesJson.Contains("Portfoy sunumu", StringComparison.OrdinalIgnoreCase))
+                {
+                    existingProject.DeliverablesJson = JsonSerializer.Serialize(BeginnerProjectDeliverables());
+                }
+
                 continue;
+            }
+
+            var deliverables = StringArray(projectElement, "deliverables");
+            if (Text(projectElement, "level", "beginner").Equals("beginner", StringComparison.OrdinalIgnoreCase) && deliverables.Length < 5)
+            {
+                deliverables = BeginnerProjectDeliverables();
             }
 
             var project = new Project
@@ -241,7 +276,7 @@ public sealed class SeedDataImporter(
                 Title = Text(projectElement, "title"),
                 Duration = Text(projectElement, "duration", ""),
                 XpReward = Int(projectElement, "xpReward", 120),
-                DeliverablesJson = JsonSerializer.Serialize(StringArray(projectElement, "deliverables"))
+                DeliverablesJson = JsonSerializer.Serialize(deliverables)
             };
 
             foreach (var rubric in projectElement.GetProperty("rubric").EnumerateArray())
@@ -415,7 +450,14 @@ public sealed class SeedDataImporter(
 
     private async Task EnsureQuizQuestionsAsync(Lesson lesson, CancellationToken cancellationToken)
     {
-        if (lesson.QuizQuestions.Count > 0 || (!lesson.LessonType.Contains("quiz", StringComparison.OrdinalIgnoreCase) && lesson.QuestionCount <= 0))
+        var isQuizLesson = lesson.LessonType.Contains("quiz", StringComparison.OrdinalIgnoreCase) || lesson.QuestionCount > 0;
+        if (!isQuizLesson)
+        {
+            return;
+        }
+
+        var targetQuestionCount = Math.Max(lesson.QuestionCount, 5);
+        if (lesson.QuizQuestions.Count >= targetQuestionCount)
         {
             return;
         }
@@ -445,15 +487,15 @@ public sealed class SeedDataImporter(
             }
         };
 
-        for (var index = 0; index < drafts.Length; index++)
+        for (var index = lesson.QuizQuestions.Count; index < targetQuestionCount; index++)
         {
-            var draft = drafts[index];
+            var draft = drafts[index % drafts.Length];
             var question = new QuizQuestion
             {
                 Id = Guid.NewGuid(),
                 LessonId = lesson.Id,
-                Prompt = draft.Prompt,
-                Explanation = draft.Explanation,
+                Prompt = index < drafts.Length ? draft.Prompt : $"{lesson.Title} kalite kontrol sorusu {index + 1}",
+                Explanation = index < drafts.Length ? draft.Explanation : "Bu soru, yayin oncesi kalite kontrol ve guvenli skor hesaplama beklentisini pekistirir.",
                 SortOrder = index + 1
             };
 
@@ -491,6 +533,23 @@ public sealed class SeedDataImporter(
                 $"{title} konusunu tek kavram üzerinden öğren. Gerektiğinde AI mentordan farklı bir örnek iste.",
                 $"Örnek: {title} gerçek bir AI öğrenme görevinde küçük ve ölçülebilir bir davranışa dönüştürülür.")
         };
+    }
+
+    private static string NextStepFor(string title)
+    {
+        return $"Bir sonraki AI Byte'a gecmeden once {title} icin kendi is akisinla ilgili tek cumlelik bir ornek yaz.";
+    }
+
+    private static string[] BeginnerProjectDeliverables()
+    {
+        return
+        [
+            "Problem secimi",
+            "Veri veya kaynak hazirligi",
+            "Basit cozum",
+            "Degerlendirme",
+            "Portfoy sunumu"
+        ];
     }
 
     private static string Text(JsonElement element, string property, string fallback = "")

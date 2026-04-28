@@ -25,19 +25,30 @@ $env:VITE_API_BASE_URL="http://localhost:5076/api/v1"
 npm run dev
 ```
 
-## Veritabanı
+## Veritabanı ve Migration
 
-- Üretim/SQL Server migration hedefi: `appsettings.json` içindeki SQL Server LocalDB connection string.
-- Development profili: LocalDB başlatılamayan makinelerde çalışabilmesi için SQLite fallback kullanır ve seed verisini otomatik içeri aktarır.
+- Varsayılan SQL Server hedefi `appsettings.json` içindeki LocalDB connection string'dir.
+- LocalDB başlatılamayan development makinelerinde `DatabaseProvider=Sqlite` override'ı kullanılabilir.
+- SQLite development fallback `EnsureCreated` + uyumluluk şeması + seed importer ile çalışır.
 - SQL Server migration dosyaları `src/AiEducation.Api/Data/Migrations` altındadır.
-- Migration üretirken Development SQLite ayarını kullanma; SQL Server hedefi için environment/config override ver.
+- Production ortamında `EnsureCreated` kullanılmamalıdır; migration uygulama stratejisi ayrıca yönetilmelidir.
+- Production JWT signing key mutlaka environment variable veya secret store üzerinden verilmelidir.
 
-SQL Server LocalDB çalışıyorsa:
+SQL Server migration update:
 
 ```powershell
 $env:ASPNETCORE_ENVIRONMENT="Migration"
 $env:Jwt__SigningKey="local-migration-signing-key-change-before-prod-32chars"
 dotnet ef database update --project src/AiEducation.Api/AiEducation.Api.csproj --startup-project src/AiEducation.Api/AiEducation.Api.csproj
+```
+
+SQLite development örneği:
+
+```powershell
+$env:ASPNETCORE_ENVIRONMENT="Development"
+$env:DatabaseProvider="Sqlite"
+$env:ConnectionStrings__SqliteConnection="Data Source=ai_education_platform_v2_dev.db"
+dotnet run --project src/AiEducation.Api/AiEducation.Api.csproj --launch-profile http
 ```
 
 ## Development Admin
@@ -47,21 +58,41 @@ Development seed çalıştığında roller (`Admin`, `Learner`) ve dev-only admi
 - E-posta: `admin@example.com`
 - Şifre: `Admin123!`
 
-Bu hesap sadece yerel geliştirme içindir; production ortamında varsayılan JWT signing key ve dev admin kullanılmamalıdır.
+Bu bilgiler yalnızca yerel development içindir. Production ortamında dev admin ve varsayılan signing key kullanılmamalıdır.
 
-## Testler
+## Test Komutları
 
 Backend:
 
 ```powershell
+dotnet restore
+dotnet build AiEducationPlatform.sln
 dotnet test tests/AiEducation.Api.Tests/AiEducation.Api.Tests.csproj
 ```
 
-Frontend:
+Frontend unit/component:
 
 ```powershell
 cd src/AiEducation.Web
-npm test
+npm install
 npm run build
+npm test
 npm run lint
 ```
+
+Playwright E2E:
+
+```powershell
+cd src/AiEducation.Web
+npx playwright install chromium
+npx playwright test
+```
+
+E2E config kendi SQLite dosyasını (`src/AiEducation.Web/ai_education_platform_v2_e2e.db`) her koşuda temizler, API'yi `DatabaseProvider=Sqlite` ile başlatır ve Vite web server'ını `http://localhost:5173` üzerinde çalıştırır.
+
+## MVP Kapsamı
+
+- Student flow: kayıt, onboarding, AI Byte tamamlama, exercise submit, XP, streak, quest ve league görünürlüğü.
+- Admin Content Studio: lesson list, create/edit, status transition, preview, resource picker ve kalite skoru.
+- Quiz editor: 4 seçenekli çoktan seçmeli soru oluşturma, tek doğru cevap validation'ı ve backend scoring.
+- League rollover: idempotent season close, promotion/demotion/protection eventleri ve admin manuel tetikleme endpointleri.

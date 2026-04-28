@@ -60,14 +60,26 @@ public sealed class Lesson
     public string LearningObjective { get; set; } = "";
     public string MiniExplanation { get; set; } = "";
     public string TinyExample { get; set; } = "";
+    public string NextStep { get; set; } = "";
     public string CompletionCriteriaJson { get; set; } = "[]";
     public int PassingScorePercent { get; set; } = 70;
     public int QuestionCount { get; set; }
     public int SortOrder { get; set; }
+    public ContentStatus Status { get; set; } = ContentStatus.Published;
+    public bool IsArchived { get; set; }
     public Unit? Unit { get; set; }
     public Exercise? Exercise { get; set; }
     public List<LessonResource> LessonResources { get; set; } = [];
     public List<QuizQuestion> QuizQuestions { get; set; } = [];
+}
+
+public enum ContentStatus
+{
+    Draft = 0,
+    ReadyForReview = 1,
+    Published = 2,
+    NeedsRevision = 3,
+    Archived = 4
 }
 
 public sealed class Exercise
@@ -163,8 +175,10 @@ public sealed class QuizQuestion
     public Guid Id { get; set; }
     public Guid LessonId { get; set; }
     public string Prompt { get; set; } = default!;
+    public string QuestionType { get; set; } = "multiple_choice";
     public string Explanation { get; set; } = "";
     public int SortOrder { get; set; }
+    public bool IsActive { get; set; } = true;
     public Lesson? Lesson { get; set; }
     public List<QuizOption> Options { get; set; } = [];
 }
@@ -308,6 +322,7 @@ public sealed class LeagueSeason
     public DateTimeOffset EndsAtUtc { get; set; }
     public LeagueTier Tier { get; set; } = LeagueTier.Bronze;
     public int GroupNumber { get; set; } = 1;
+    public DateTimeOffset? ClosedAtUtc { get; set; }
     public List<LeagueParticipant> Participants { get; set; } = [];
 }
 

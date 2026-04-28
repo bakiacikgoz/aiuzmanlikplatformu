@@ -57,6 +57,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
         builder.Entity<LearningPath>().HasIndex(x => x.Slug).IsUnique();
         builder.Entity<Unit>().HasIndex(x => x.Slug).IsUnique();
         builder.Entity<Lesson>().HasIndex(x => x.Slug).IsUnique();
+        builder.Entity<Lesson>().Property(x => x.IsArchived).HasDefaultValue(false);
         builder.Entity<Resource>().HasIndex(x => x.Slug).IsUnique();
         builder.Entity<Project>().HasIndex(x => x.Slug).IsUnique();
         builder.Entity<Badge>().HasIndex(x => x.Slug).IsUnique();
@@ -99,6 +100,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
             .WithMany(x => x.QuizQuestions)
             .HasForeignKey(x => x.LessonId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<QuizQuestion>().Property(x => x.QuestionType).HasDefaultValue("multiple_choice");
+        builder.Entity<QuizQuestion>().Property(x => x.IsActive).HasDefaultValue(true);
 
         builder.Entity<QuizOption>()
             .HasOne(x => x.QuizQuestion)

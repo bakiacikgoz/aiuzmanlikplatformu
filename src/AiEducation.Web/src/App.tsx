@@ -3,7 +3,12 @@ import type { FormEvent, ReactNode } from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AppShell } from './app/AppShell'
-import { AdminLessonForm, type AdminLessonPayload } from './features/admin/AdminLessonForm'
+import { ContentDashboard } from './features/admin/content/ContentDashboard'
+import { LessonEditor } from './features/admin/content/LessonEditor'
+import { LessonList } from './features/admin/content/LessonList'
+import { LessonPreview } from './features/admin/content/LessonPreview'
+import { QuizQuestionEditor } from './features/admin/content/QuizQuestionEditor'
+import { ResourceManager } from './features/admin/content/ResourceManager'
 import { DashboardView } from './features/dashboard/DashboardView'
 import { LeagueCard } from './features/leagues/LeagueCard'
 import { LessonPlayer } from './features/lessonPlayer/LessonPlayer'
@@ -51,7 +56,13 @@ function ProtectedApp() {
         <Route path="/ai-mentor" element={<AiMentorPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/content" element={<AdminContentPage />} />
+        <Route path="/admin/content" element={<Page title="Content Studio"><ContentDashboard /></Page>} />
+        <Route path="/admin/content/lessons" element={<Page title="Dersler"><LessonList /></Page>} />
+        <Route path="/admin/content/lessons/new" element={<Page title="Yeni AI Byte"><LessonEditor /></Page>} />
+        <Route path="/admin/content/lessons/:id/edit" element={<Page title="AI Byte Editor"><LessonEditor /></Page>} />
+        <Route path="/admin/content/lessons/:id/preview" element={<Page title="Lesson Preview"><LessonPreview /></Page>} />
+        <Route path="/admin/content/quizzes" element={<Page title="Quiz Editor"><QuizQuestionEditor /></Page>} />
+        <Route path="/admin/content/resources" element={<Page title="Kaynaklar"><ResourceManager /></Page>} />
         <Route path="/admin/experiments" element={<AdminExperimentsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
       </Routes>
@@ -391,11 +402,6 @@ function AdminPage() {
       </div>
     </Page>
   )
-}
-
-function AdminContentPage() {
-  const mutation = useMutation({ mutationFn: (payload: AdminLessonPayload) => post('/admin/lessons', payload) })
-  return <Page title="Admin İçerik Yönetimi"><AdminLessonForm onSubmit={async (payload) => { await mutation.mutateAsync(payload) }} /></Page>
 }
 
 function AdminExperimentsPage() {

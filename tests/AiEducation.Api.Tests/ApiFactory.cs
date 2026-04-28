@@ -4,6 +4,7 @@ using AiEducation.Api.Data;
 using AiEducation.Api.Features.Gamification;
 using AiEducation.Api.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,33 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public static void Authorize(HttpClient client, string token)
     {
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    public async Task<string> RegisterAdminAndGetTokenAsync(HttpClient client, string email = "admin-e2e@example.com")
+    {
+        var token = await RegisterAndGetTokenAsync(client, email);
+        using var scope = Services.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new IdentityRole<Guid>("Admin"));
+        }
+
+        var user = await userManager.FindByEmailAsync(email) ?? throw new InvalidOperationException("Admin user not found.");
+        if (!await userManager.IsInRoleAsync(user, "Admin"))
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+
+        var login = await client.PostAsJsonAsync("/api/v1/auth/login", new
+        {
+            email,
+            password = "Passw0rd!"
+        });
+        login.EnsureSuccessStatusCode();
+        var payload = await login.Content.ReadFromJsonAsync<AuthPayload>();
+        return payload?.AccessToken ?? token;
     }
 
     private static void Seed(AppDbContext db)

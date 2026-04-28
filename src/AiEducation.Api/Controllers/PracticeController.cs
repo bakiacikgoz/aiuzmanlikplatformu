@@ -90,7 +90,7 @@ public sealed class PracticeController(
             return NotFound();
         }
 
-        var questions = lesson.QuizQuestions.OrderBy(x => x.SortOrder).ToList();
+        var questions = lesson.QuizQuestions.Where(x => x.IsActive).OrderBy(x => x.SortOrder).ToList();
         if (questions.Count == 0)
         {
             return BadRequest(new { message = "Bu ders için quiz sorusu bulunamadı." });

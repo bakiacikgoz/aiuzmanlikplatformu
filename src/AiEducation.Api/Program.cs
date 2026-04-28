@@ -122,6 +122,10 @@ builder.Services.AddScoped<LeagueService>();
 builder.Services.AddScoped<ExperimentAssignmentService>();
 builder.Services.AddScoped<SeedDataImporter>();
 builder.Services.AddScoped<IAiMentorClient, MockAiMentorClient>();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<LeagueRolloverHostedService>();
+}
 
 var app = builder.Build();
 
@@ -178,8 +182,10 @@ static async Task EnsureSqliteFallbackSchemaAsync(AppDbContext db)
             "Id" TEXT NOT NULL CONSTRAINT "PK_QuizQuestions" PRIMARY KEY,
             "LessonId" TEXT NOT NULL,
             "Prompt" TEXT NOT NULL,
+            "QuestionType" TEXT NOT NULL DEFAULT 'multiple_choice',
             "Explanation" TEXT NOT NULL,
             "SortOrder" INTEGER NOT NULL,
+            "IsActive" INTEGER NOT NULL DEFAULT 1,
             CONSTRAINT "FK_QuizQuestions_Lessons_LessonId" FOREIGN KEY ("LessonId") REFERENCES "Lessons" ("Id") ON DELETE CASCADE
         );
         """);
@@ -218,9 +224,20 @@ static async Task EnsureSqliteFallbackSchemaAsync(AppDbContext db)
     await db.Database.ExecuteSqlRawAsync("""CREATE INDEX IF NOT EXISTS "IX_UserExerciseSubmissions_UserId_ExerciseId_CreatedAtUtc" ON "UserExerciseSubmissions" ("UserId", "ExerciseId", "CreatedAtUtc");""");
     await db.Database.ExecuteSqlRawAsync("""CREATE INDEX IF NOT EXISTS "IX_XpTransactions_UserId_EventType_ReferenceType_ReferenceId" ON "XpTransactions" ("UserId", "EventType", "ReferenceType", "ReferenceId");""");
 
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "LeagueSeasons" ADD "GroupNumber" INTEGER NOT NULL DEFAULT 1;""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "LeagueSeasons" ADD "ClosedAtUtc" TEXT NULL;""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "Lessons" ADD "NextStep" TEXT NOT NULL DEFAULT '';""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "Lessons" ADD "Status" INTEGER NOT NULL DEFAULT 2;""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "Lessons" ADD "IsArchived" INTEGER NOT NULL DEFAULT 0;""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "QuizQuestions" ADD "QuestionType" TEXT NOT NULL DEFAULT 'multiple_choice';""");
+    await TrySqliteAlterTableAsync(db, """ALTER TABLE "QuizQuestions" ADD "IsActive" INTEGER NOT NULL DEFAULT 1;""");
+}
+
+static async Task TrySqliteAlterTableAsync(AppDbContext db, string sql)
+{
     try
     {
-        await db.Database.ExecuteSqlRawAsync("""ALTER TABLE "LeagueSeasons" ADD "GroupNumber" INTEGER NOT NULL DEFAULT 1;""");
+        await db.Database.ExecuteSqlRawAsync(sql);
     }
     catch (Microsoft.Data.Sqlite.SqliteException exception) when (exception.SqliteErrorCode == 1 && exception.Message.Contains("duplicate column", StringComparison.OrdinalIgnoreCase))
     {
